@@ -1,0 +1,28 @@
+# Global settings for the Voice-to-Voice AI Agent MVP pipeline
+
+# Selection of active providers for each pipeline step
+# Valid options must be registered in the respective factories
+active_providers:
+  noise: "rnnoise"
+  vad: "dummy"
+  stt: "dummy"
+  llm: "gemini"
+  tts: "elevenlabs"
+
+# Audio interface configuration settings
+audio:
+  input_device_index: null
+  output_device_index: null
+  sample_rate: 16000          # 16kHz standard for VAD and STT
+  channels: 1                 # Mono
+  bit_depth: 16               # 16-bit depth
+  frame_duration_ms: 30       # standard frame duration for VAD (30ms)
+  chunk_size: 480             # 16000 * 0.030 = 480 samples per chunk
+  buffer_max_size: 100        # Maximum chunks to hold in buffer
+
+# Logging verbosity and configuration
+logging:
+  level: "INFO"
+  to_console: true
+  to_file: true
+  file_path: "logs/pipeline.log"

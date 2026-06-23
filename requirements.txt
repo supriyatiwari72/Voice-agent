@@ -1,0 +1,7 @@
+pyyaml==6.0.1
+pytest==8.2.2
+numpy
+torch
+silero-vad
+faster-whisper
+ctranslate2
