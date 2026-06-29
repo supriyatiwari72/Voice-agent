@@ -70,6 +70,7 @@ class VADWorker(BaseWorker):
         self._barge_in_rms_multiplier = 2.5
         self._min_speech_bytes = 8000
 
+        self._barge_in_enabled = True
         if context and hasattr(context, "config") and context.config:
             models_meta = context.config.get("models_meta", {})
             vad_config = (
@@ -82,6 +83,7 @@ class VADWorker(BaseWorker):
             self._pad_frames = vad_config.get("pad_frames", 5)
             self._barge_in_rms_multiplier = vad_config.get("barge_in_rms_multiplier", 2.5)
             self._min_speech_bytes = vad_config.get("min_speech_bytes", 12000)
+            self._barge_in_enabled = context.config.get("conversation", {}).get("barge_in_enabled", True)
 
         # Detect streaming vs batch STT path
         stt_provider = ""
@@ -110,6 +112,13 @@ class VADWorker(BaseWorker):
         if current_state in _BUSY_STATES:
             return
 
+        # Ignore mic input if assistant is speaking and barge-in is disabled (or during greeting)
+        active_req_id = self.context.get_active_request_id()
+        is_greeting = active_req_id is not None and active_req_id.startswith("greeting-")
+        if current_state == PipelineState.SPEAKING:
+            if not self._barge_in_enabled or is_greeting:
+                return
+
         frame_rms = _calculate_rms(payload.audio)
         
         # Call Silero VAD to get probability
@@ -135,22 +144,42 @@ class VADWorker(BaseWorker):
 
         # Handle speech started (voice onset)
         if eos_res["speech_started"]:
+            # ── Push-to-talk gate ─────────────────────────────────────────────
+            # In LISTENING state, only start a turn when the user has explicitly
+            # clicked the "Speak Now" button (ptt_active is set).
+            # In SPEAKING state (barge-in), skip the gate — interruption works automatically.
+            is_barge_in_candidate = current_state in _BARGE_IN_STATES
+            has_ptt = hasattr(self.context, "ptt_active")
+            if not is_barge_in_candidate and has_ptt and not self.context.ptt_active.is_set():
+                logger.debug("VADWorker: speech_started ignored — ptt_active not set (no button click).")
+                self.eos_manager.reset()
+                return
+
             self._current_request_id = payload.request_id
             self._in_speech = True
+
             
             # Start timer for speech onset latency metric
             self.context.metrics.record_metric("speech_detection_latency_ms", (time.time() - payload.created_at) * 1000)
             
             # Interruption check
+            is_barge_in = False
             if current_state in _BARGE_IN_STATES:
                 logger.info(f"Barge-in detected in state {current_state.name}. Triggering interruption.")
                 self.context.interruption_event.set()
+                # Signal to LLM worker that a barge-in occurred — it will
+                # apply a focused-listening delay before answering.
+                self.context.barge_in_occurred.set()
                 interruption_payload = InterruptionPayload(
                     request_id=self._current_request_id,
                     timestamp=time.time(),
                 )
                 if self.context.queue_manager.interruption_queue:
                     self.context.queue_manager.interruption_queue.put(interruption_payload)
+                is_barge_in = True
+                # Extend EOS patience so VAD waits longer before cutting the
+                # user off mid-question after a barge-in (roughly 2 extra seconds)
+                self.eos_manager.extend_silence_patience(extra_frames=67)
             
             self.context.set_active_request_id(self._current_request_id)
             self.context.set_state(PipelineState.USER_SPEAKING)
@@ -159,6 +188,9 @@ class VADWorker(BaseWorker):
             
             # Stream the starting pre-speech history
             if self._use_streaming:
+                if is_barge_in:
+                    # Clear echo-contaminated history BEFORE joining
+                    self._pre_speech_history = []
                 history = b"".join(self._pre_speech_history)
                 if history:
                     start_payload = StreamingAudioPayload(
@@ -169,6 +201,14 @@ class VADWorker(BaseWorker):
                     )
                     self.output_queue.put(start_payload)
             else:
+                if is_barge_in:
+                    # Clear echo-contaminated history BEFORE joining
+                    self._pre_speech_history = []
+                    # Flush any stale speech/transcript payloads from prior response
+                    try:
+                        self.context.queue_manager.flush_queue("speech_queue")
+                    except Exception:
+                        pass
                 self._speech_buffer = b"".join(self._pre_speech_history)
                 self._silence_chunks = []
 
@@ -236,12 +276,13 @@ class VADWorker(BaseWorker):
             duration = len(self._speech_buffer) / 32000.0
             seg_rms = _calculate_rms(self._speech_buffer)
             
-            # Validation gates
-            if len(self._speech_buffer) < self._min_speech_bytes or seg_rms < self._segment_rms_threshold:
-                logger.warning(f"Discarding turn: size={len(self._speech_buffer)}, rms={seg_rms:.4f}")
+            # Validation gates (duration check only — trust VAD model for voice classification)
+            if len(self._speech_buffer) < self._min_speech_bytes:
+                logger.warning(f"Discarding turn: size={len(self._speech_buffer)} < {self._min_speech_bytes}")
                 self.context.set_state(PipelineState.LISTENING)
                 self._reset()
                 return
+
             
             self.context.set_state(PipelineState.PROCESSING)
             self.context.trigger_event(EventType.SPEECH_ENDED, self._current_request_id)
@@ -263,3 +304,7 @@ class VADWorker(BaseWorker):
         self._silence_chunks = []
         self._current_request_id = None
         self.eos_manager.reset()
+        # Clear PTT gate so the Speak Now button must be clicked again for the next turn
+        if hasattr(self.context, "ptt_active"):
+            self.context.ptt_active.clear()
+

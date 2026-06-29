@@ -32,8 +32,8 @@ def test_memory_manager_turn_and_context():
     manager.add_user_message("What is Artificial Intelligence?")
     assert manager._current_user_query == "What is Artificial Intelligence?"
 
-    # Fact extraction was invoked
-    mock_llm.generate.assert_called_once()
+    # Regex-based FactExtractor does NOT call LLM
+    mock_llm.generate.assert_not_called()
 
     context = manager.get_context("What is Artificial Intelligence?")
     assert "[System Prompt]\nConcisely assist user." in context
@@ -59,11 +59,10 @@ def test_memory_manager_turn_and_context():
 def test_memory_manager_async_summarization():
     """Verify background summarization fires when max_recent_turns is exceeded."""
     manager, mock_llm, mock_metrics = _make_manager(max_recent_turns=2)
+    # Regex extractor no longer calls LLM for facts;
+    # only the summarizer calls llm.generate once.
     mock_llm.generate.side_effect = [
-        "{}",   # fact T1
-        "{}",   # fact T2
-        "{}",   # fact T3
-        "Merged rolling summary of old turns."
+        "Merged rolling summary of old turns."  # summarizer call only
     ]
 
     manager.add_user_message("T1 user")
@@ -78,7 +77,7 @@ def test_memory_manager_async_summarization():
     manager.add_user_message("T3 user")
     manager.add_assistant_message("T3 assistant")
 
-    time.sleep(0.3)  # allow daemon thread to complete
+    time.sleep(0.5)  # allow daemon thread to complete
 
     assert manager.store.get_summary() == "Merged rolling summary of old turns."
     mock_metrics.record_metric.assert_any_call("summary_count", 1.0)

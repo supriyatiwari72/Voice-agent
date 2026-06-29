@@ -228,8 +228,16 @@ def main() -> None:
         popup.destroy()
         sys.exit(1)
 
+    # Wire PTT callback: clicking Speak Now sets ptt_active on the context
+    def _ptt_callback():
+        manager.context.ptt_active.set()
+        logger.info("PTT activated: user clicked Speak Now button.")
+
+    popup.ptt_callback = _ptt_callback
+
     # Register popup as a listener on pipeline state transitions
     manager.context.register_state_listener(popup.on_state_changed)
+
 
     # ── Wire Console Listener ──────────────────────────────────────────────
     listener = ConsolePipelineListener(manager.context, manager.metrics_tracker)

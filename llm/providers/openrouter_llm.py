@@ -93,8 +93,6 @@ class OpenRouterLLM(BaseLLM):
                 if not delta:
                     continue
                 content = delta.content
-                if not content and getattr(delta, "reasoning", None):
-                    content = delta.reasoning
                 if content:
                     yield content
         except Exception as e:

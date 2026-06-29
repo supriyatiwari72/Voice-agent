@@ -3,7 +3,7 @@ import os
 import threading
 import time
 import uuid
-from typing import Dict, Any, Callable
+from typing import Dict, Any, Callable, Optional
 from pipeline.pipeline_state import PipelineState
 from core.events import EventType
 
@@ -54,6 +54,13 @@ class PipelineContext:
         # Coordination events
         self.shutdown_event = threading.Event()
         self.interruption_event = threading.Event()
+        # Set when a barge-in occurs so the LLM worker can apply
+        # a focused-listening delay before generating a response.
+        self.barge_in_occurred = threading.Event()
+        # Push-to-talk gate: VAD only captures a turn when this is set.
+        # Cleared automatically by VADWorker after speech is finalized.
+        # Not required for barge-in (interruption during Friday's speech).
+        self.ptt_active = threading.Event()
         
         # Thread-safe pipeline state management
         self._state = PipelineState.IDLE

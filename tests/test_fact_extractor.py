@@ -4,16 +4,15 @@ from memory.fact_extractor import FactExtractor
 
 def test_fact_extractor_success():
     """
-    Verify key-value JSON parsing matches expected dictionary format.
+    Verify regex-based extraction finds the user's name correctly.
     """
     mock_llm = MagicMock()
-    mock_llm.generate.return_value = '{"name": "Supriya", "project": "Voice Assistant"}'
-    
     extractor = FactExtractor(mock_llm)
-    facts = extractor.extract_facts("My name is Supriya and I'm building a Voice Assistant.")
-    
-    assert facts == {"name": "Supriya", "project": "Voice Assistant"}
-    mock_llm.generate.assert_called_once()
+    facts = extractor.extract_facts("My name is Supriya.")
+
+    assert facts == {"name": "Supriya"}
+    # Regex extractor does not call LLM
+    mock_llm.generate.assert_not_called()
 
 def test_fact_extractor_markdown_json():
     """

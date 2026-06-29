@@ -190,6 +190,22 @@ class STTWorker(BaseWorker):
             self._streaming_active = False
             self._active_stream_id = None
 
+    def _is_hallucination(self, text: str, duration: float) -> bool:
+        """Detect Whisper silence/noise hallucinations (like short 'Thank you' or 'You're welcome')."""
+        cleaned = text.strip().lower().rstrip(".,!?")
+        if not cleaned:
+            return True
+        
+        # Whisper commonly hallucinates these phrases on silence, breathing or room static
+        hallucinations = {
+            "thank you", "thank you very much", "you're welcome", "you", 
+            "thanks for watching", "subtitles by", "bye", "goodbye"
+        }
+        
+        if cleaned in hallucinations and duration < 1.8:
+            return True
+        return False
+
     def _run_batch_from_stream(self, request_id: str, audio: bytes, timestamp: float) -> None:
         self.context.set_state(PipelineState.TRANSCRIBING)
         start_time = time.time()
@@ -205,6 +221,11 @@ class STTWorker(BaseWorker):
         latency_ms = (time.time() - start_time) * 1000
         self.context.metrics.record_metric("stt_latency_ms", latency_ms)
         
+        if self._is_hallucination(text, duration):
+            logger.warning(f"STTWorker: Discarding hallucinated transcript '{text}' (duration={duration:.2f}s)")
+            self.context.set_state(PipelineState.LISTENING)
+            return
+
         # Dialogue console print
         print(f"\n[You]\n{text}\n", flush=True)
         
@@ -233,6 +254,11 @@ class STTWorker(BaseWorker):
 
         rtf = latency_seconds / duration if duration > 0.0 else 0.0
         logger.info(f"STT Latency: {latency_ms:.0f} ms | RTF: {rtf:.2f}")
+
+        if self._is_hallucination(text, duration):
+            logger.warning(f"STTWorker: Discarding hallucinated transcript '{text}' (duration={duration:.2f}s)")
+            self.context.set_state(PipelineState.LISTENING)
+            return
 
         print(f"\n[You]\n{text}\n", flush=True)
 

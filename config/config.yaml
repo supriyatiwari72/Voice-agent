@@ -14,15 +14,15 @@ active_providers:
   noise: "rnnoise"
   vad: "silero"
   stt: "distil_whisper"
-  llm: "openrouter"
+  llm: "groq"
   tts: "piper_streaming"
 
 # System prompt injected into each LLM request.
-system_prompt: "You are Friday, a helpful and concise voice assistant. Always respond in English. Respond in 1-3 short sentences. Do not use markdown, bullet points, or code blocks. Do not introduce yourself unless directly asked."
+system_prompt: "You are Friday, a helpful and concise voice assistant. Always respond in English. Respond in 3-4 detailed sentences. Do not use markdown, bullet points, or code blocks. Do not introduce yourself unless directly asked. Do not include any internal thoughts, reasoning, or explanations — output only the direct message to be spoken. You have access to memory about the user — use the [User Profile Facts] and [Recent Turns] sections provided to you to remember and reference facts like the user's name, age, or preferences when relevant."
 
 # Audio interface configuration
 audio:
-  input_device_index: null        # null = system default microphone
+  input_device_index: 20        # Use the high-quality Realtek Microphone input
   output_device_index: null       # null = system default speakers
   sample_rate: 16000              # 16kHz — required for Silero VAD and Whisper
   output_sample_rate: 24000       # 24kHz — output rate for TTS playback
@@ -43,6 +43,7 @@ queues:
 
 # Conversation flow
 conversation:
+  barge_in_enabled: true         # Enable barge-in so the user can interrupt Friday
   followup_enabled: true         # Ask "Anything else?" after each response
   goodbye_detection: true        # End conversation on "bye" / "goodbye"
   max_silence_before_listen_ms: 500  # UI hint delay before showing "Listening..."
@@ -56,8 +57,8 @@ logging:
 
 # Memory configuration
 memory:
-  enabled: false
-  max_recent_turns: 20
+  enabled: true
+  max_recent_turns: 10
   max_turns_before_summary: 50
   max_context_chars: 12000
   max_summaries: 10

@@ -33,8 +33,13 @@ class InterruptionManager:
         # 3. Trigger interrupt callbacks to stop playback immediately
         self.context.trigger_interrupt_callbacks()
 
-        # 4. Flush intermediate communication queues
+        # 4. Clear the interruption_event flag FIRST so that the new
+        #    STT request_id is NOT rejected as "interrupted" by workers
+        self.context.interruption_event.clear()
+
+        # 5. Flush all stale pipeline queues (speech, transcripts, LLM, TTS, playback)
         qm = self.context.queue_manager
+        qm.flush_queue("speech_queue")           # drop old audio in-flight
         qm.flush_queue("transcript_queue")
         qm.flush_queue("partial_transcript_queue")
         qm.flush_queue("partial_response_queue")
@@ -42,13 +47,11 @@ class InterruptionManager:
         qm.flush_queue("partial_audio_queue")
         qm.flush_queue("playback_queue")
 
-        # 5. Clear interruption event so the new speech turn can proceed
-        self.context.interruption_event.clear()
-
-        # 6. Set state to LISTENING
+        # 6. Set state to LISTENING so the new turn can begin immediately
         self.context.set_state(PipelineState.LISTENING)
 
         # 7. Trigger INTERRUPTION_FINISHED
         self.context.trigger_event(EventType.INTERRUPTION_FINISHED, request_id)
 
         logger.info(f"Interruption handling completed for request {request_id}. Pipeline state is now LISTENING.")
+

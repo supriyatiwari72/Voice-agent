@@ -35,6 +35,10 @@ class EOSManager:
         self.min_speech_duration_ms = float(eos_config.get("min_speech_duration_ms", 300.0))
         self.silence_timeout_ms = float(eos_config.get("silence_timeout_ms", 800.0))
         
+        # Save default settings for restoration on reset
+        self._default_silence_frames = self.consecutive_silence_frames
+        self._default_silence_timeout_ms = self.silence_timeout_ms
+        
         # Dynamic threshold scaling multiplier during Friday playback (barge-in echo suppression)
         self.barge_in_rms_multiplier = float(eos_config.get("barge_in_rms_multiplier", 5.0))
         
@@ -55,6 +59,11 @@ class EOSManager:
         self.speech_start_time = None
         self.last_speech_time = None
         self.speech_chunks_count = 0
+        
+        # Restore default silence frames and timeout
+        self.consecutive_silence_frames = self._default_silence_frames
+        self.silence_timeout_ms = self._default_silence_timeout_ms
+
 
     def process_frame(self, frame_rms: float, vad_confidence: float, current_state: Any, is_mock_or_dummy: bool = False) -> Dict[str, Any]:
         """
@@ -149,3 +158,18 @@ class EOSManager:
             "speech_ended": speech_ended,
             "noise_floor": self.noise_floor
         }
+
+    def extend_silence_patience(self, extra_frames: int = 67) -> None:
+        """
+        Temporarily increases the consecutive silence frames and timeout ms required
+        before EOS is triggered. Called after a barge-in turn to give the user
+        extra patience so they aren't cut off mid-question.
+        ~67 frames ≈ 2 extra seconds.
+        """
+        self.consecutive_silence_frames += extra_frames
+        self.silence_timeout_ms += extra_frames * self.frame_duration_ms
+        logger.info(
+            f"EOSManager: Barge-in patience extended to {self.consecutive_silence_frames} frames "
+            f"({self.silence_timeout_ms / 1000:.2f}s silence timeout)."
+        )
+

@@ -1,52 +1,61 @@
-import json
 import re
 import logging
 from typing import Dict, Any
 
 logger = logging.getLogger(__name__)
 
+# Regex patterns for common user facts — ordered by priority
+_FACT_PATTERNS = [
+    # Name patterns — stop at conjunctions, punctuation, or sentence end
+    ("name", re.compile(
+        r"(?:my name is|i am|i'm|call me|they call me|people call me|you can call me)\s+([A-Z][a-zA-Z'\-]+(?:\s+[A-Z][a-zA-Z'\-]+)?)(?:\s+(?:and|but|or|so)\b|[,\.!?]|$)",
+        re.IGNORECASE
+    )),
+    # Age patterns
+    ("age", re.compile(
+        r"i(?:'m| am)\s+(\d{1,3})\s+years?\s+old|my age is\s+(\d{1,3})",
+        re.IGNORECASE
+    )),
+    # Location patterns
+    ("location", re.compile(
+        r"(?:i live in|i'm from|i am from|i'm in|i stay in)\s+([A-Z][a-zA-Z\s,]+?)(?:\.|,|$)",
+        re.IGNORECASE
+    )),
+    # Occupation patterns
+    ("occupation", re.compile(
+        r"(?:i(?:'m| am) (?:a|an)\s+)([a-zA-Z\s]+?)(?:\s+(?:by profession|by trade|at |\.|,|$))",
+        re.IGNORECASE
+    )),
+]
+
+
 class FactExtractor:
     """
-    Extracts key-value facts from user queries using the active LLM provider.
+    Extracts key-value facts from user messages using fast regex patterns.
+    Catches name introductions, age, location and occupation instantly
+    without any LLM API call, adding zero latency to the voice pipeline.
     """
     def __init__(self, llm: Any):
+        # llm kept for API compatibility but not used in this implementation
         self.llm = llm
 
     def extract_facts(self, user_message: str) -> Dict[str, Any]:
         """
-        Queries LLM to find facts in the user message and parse them to a dictionary.
+        Scans user message with regex patterns and returns any found facts.
         """
         if not user_message or len(user_message.strip()) < 3:
             return {}
 
-        prompt = (
-            "You are a factual information extraction assistant.\n"
-            "Analyze the user message and extract key facts about the user's name, profile, preferences, projects, or interests as key-value pairs in JSON format.\n"
-            "Only return keys that have been explicitly mentioned or updated. If no new factual details are present, return an empty JSON object {}.\n"
-            "Do not include any extra text, comments, explanation, or code block formatting. Return only valid JSON.\n\n"
-            f"User Message: \"{user_message}\"\n"
-            "JSON output:"
-        )
+        facts: Dict[str, Any] = {}
 
-        try:
-            logger.info("Triggering LLM for fact extraction...")
-            raw_response = self.llm.generate(prompt).strip()
-            
-            # Extract JSON block using regex
-            match = re.search(r"\{.*\}", raw_response, re.DOTALL)
+        for fact_key, pattern in _FACT_PATTERNS:
+            match = pattern.search(user_message)
             if match:
-                json_str = match.group(0)
-                facts = json.loads(json_str)
-                if isinstance(facts, dict):
-                    logger.info(f"Successfully extracted facts: {facts}")
-                    return facts
-            
-            # Try parsing raw response if regex didn't find braces but it starts/ends with them
-            facts = json.loads(raw_response)
-            if isinstance(facts, dict):
-                logger.info(f"Successfully extracted facts directly: {facts}")
-                return facts
-        except Exception as e:
-            logger.warning(f"Failed to extract facts or parse JSON: {e}")
-        
-        return {}
+                # Pick the first non-None group
+                value = next((g for g in match.groups() if g is not None), None)
+                if value:
+                    value = value.strip().rstrip(".,!?")
+                    facts[fact_key] = value
+                    logger.info(f"FactExtractor: Extracted '{fact_key}' = '{value}'")
+
+        return facts
