@@ -5,3 +5,12 @@ torch
 silero-vad
 faster-whisper
 ctranslate2
+requests
+psutil
+scipy
+sounddevice
+piper-tts
+kokoro-onnx
+deepgram-sdk
+openai
+python-dotenv

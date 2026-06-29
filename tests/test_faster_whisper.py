@@ -130,20 +130,26 @@ def test_pipeline_independence_from_stt_provider(mock_whisper_cls, mock_whisper_
     mock_whisper_cls.return_value = mock_instance
     mock_instance.transcribe.return_value = ([MockSegment("Hi")], None)
 
-    from pipeline.voice_pipeline import VoicePipeline
-    from noise.factory import NoiseFactory
-    from vad.factory import VADFactory
-    from llm.factory import LLMFactory
-    from tts.factory import TTSFactory
+    from pipeline.pipeline_manager import PipelineManager
+    from workers.stt_worker import STTWorker
 
-    noise = NoiseFactory.get_provider("dummy", mock_whisper_config)
-    vad = VADFactory.get_provider("dummy", mock_whisper_config)
-    stt = STTFactory.get_provider("faster_whisper", mock_whisper_config)
-    llm = LLMFactory.get_provider("dummy", mock_whisper_config)
-    tts = TTSFactory.get_provider("dummy", mock_whisper_config)
+    # Build config utilizing dummy/mock providers to prevent heavy downloads/API calls
+    config = {
+        "active_providers": {
+            "noise": "dummy",
+            "vad": "dummy",
+            "stt": "faster_whisper",
+            "llm": "dummy",
+            "tts": "dummy"
+        },
+        "models_meta": mock_whisper_config["models_meta"]
+    }
 
-    pipeline = VoicePipeline(noise, vad, stt, llm, tts)
-    
-    # Ensure it works dynamically without loading concrete classes directly in pipeline constructor
-    assert pipeline.stt == stt
-    assert isinstance(pipeline.stt, BaseSTT)
+    manager = PipelineManager(config)
+    manager.initialize_pipeline()
+
+    # Retrieve STT worker from manager and verify the STT provider resolves as BaseSTT
+    stt_worker = next(w for w in manager.workers if isinstance(w, STTWorker))
+    assert isinstance(stt_worker.stt, BaseSTT)
+    assert stt_worker.stt.__class__.__name__ == "FasterWhisperSTT"
+

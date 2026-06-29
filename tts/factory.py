@@ -1,6 +1,10 @@
 from typing import Dict, Any, Type
 from tts.base import BaseTTS
 from tts.providers.dummy import DummyTTS
+from tts.providers.kokoro import KokoroTTS
+from tts.providers.kokoro_streaming import KokoroStreamingTTS
+from tts.providers.piper_streaming import PiperStreamingTTS
+from tts.providers.deepgram_streaming import DeepgramStreamingTTS
 
 class TTSFactory:
     """
@@ -9,9 +13,14 @@ class TTSFactory:
     _providers: Dict[str, Type[BaseTTS]] = {
         "elevenlabs": DummyTTS,
         "cartesia": DummyTTS,
+        "deepgram": DeepgramStreamingTTS,
+        "deepgram_streaming": DeepgramStreamingTTS,
         "piper": DummyTTS,
+        "piper_streaming": PiperStreamingTTS,
         "coqui": DummyTTS,
-        "dummy": DummyTTS
+        "kokoro": KokoroTTS,
+        "kokoro_streaming": KokoroStreamingTTS,
+        "dummy": DummyTTS,
     }
 
     @classmethod

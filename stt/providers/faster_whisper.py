@@ -49,8 +49,7 @@ class FasterWhisperSTT(BaseSTT):
         """
         try:
             warm_up_audio = np.zeros(16000, dtype=np.float32)
-            # Run inference and exhaust segments iterator to complete the run
-            segments, _ = self.model.transcribe(warm_up_audio, beam_size=self.beam_size)
+            segments, _ = self.model.transcribe(warm_up_audio, beam_size=self.beam_size, language="en")
             list(segments)
             logger.info("Faster Whisper model warm-up completed.")
         except Exception as e:
@@ -76,8 +75,8 @@ class FasterWhisperSTT(BaseSTT):
             if len(audio_np) == 0:
                 return ""
 
-            # Call transcription
-            segments, _ = self.model.transcribe(audio_np, beam_size=self.beam_size)
+            # Call transcription — force English to avoid auto-detecting other languages
+            segments, _ = self.model.transcribe(audio_np, beam_size=self.beam_size, language="en")
             
             # Exhaust segments generator to accumulate the final transcript string
             segment_texts = [segment.text for segment in segments]

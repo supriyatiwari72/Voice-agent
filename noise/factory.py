@@ -1,13 +1,14 @@
 from typing import Dict, Any, Type
 from noise.base import BaseNoiseCanceller
 from noise.providers.dummy import DummyNoiseCanceller
+from noise.providers.rnnoise import RNNoiseCanceller
 
 class NoiseFactory:
     """
     Factory class responsible for validating and resolving BaseNoiseCanceller instances.
     """
     _providers: Dict[str, Type[BaseNoiseCanceller]] = {
-        "rnnoise": DummyNoiseCanceller,
+        "rnnoise": RNNoiseCanceller,
         "deepfilternet": DummyNoiseCanceller,
         "dummy": DummyNoiseCanceller
     }

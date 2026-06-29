@@ -9,3 +9,10 @@ logs/
 venv/
 build/
 dist/
+weights/
+rnnoise.dll
+metrics.json
+benchmark_report.json
+benchmarks/results/*.json
+audio/recordings/
+

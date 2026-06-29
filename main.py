@@ -1,7 +1,10 @@
 import logging
 import sys
 import time
+from dotenv import load_dotenv
 from utils.config_loader import ConfigLoader
+
+load_dotenv()
 from utils.config_validator import ConfigValidator
 from utils.logger import setup_logger
 from pipeline.pipeline_manager import PipelineManager

@@ -6,6 +6,10 @@ class BaseLLM(ABC):
     Abstract base class establishing the contract for Large Language Model (LLM) providers.
     """
 
+    def supports_streaming_llm(self) -> bool:
+        """Returns True if this provider can stream generation tokens."""
+        return True
+
     @abstractmethod
     def generate(self, prompt: str) -> str:
         """

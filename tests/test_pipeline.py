@@ -1,69 +1,70 @@
-from noise.factory import NoiseFactory
-from vad.factory import VADFactory
-from stt.factory import STTFactory
-from llm.factory import LLMFactory
-from tts.factory import TTSFactory
+from core.pipeline_context import PipelineContext
+from core.queue_manager import QueueManager
+from core.metrics import MetricsTracker
 from pipeline.voice_pipeline import VoicePipeline
 from pipeline.pipeline_state import PipelineState
+from pipeline.pipeline_manager import PipelineManager
 
 def test_pipeline_initialization_and_states():
     """
-    Test that VoicePipeline correctly constructs from abstract references and switches state.
+    Test that VoicePipeline correctly constructs with a PipelineContext and switches state.
     """
-    # 1. Resolve providers from registries
-    noise = NoiseFactory.get_provider("rnnoise")
-    vad = VADFactory.get_provider("dummy")
-    stt = STTFactory.get_provider("faster_whisper")
-    llm = LLMFactory.get_provider("gemini")
-    tts = TTSFactory.get_provider("elevenlabs")
+    config = {
+        "queues": {
+            "audio_queue_size": 10,
+            "speech_queue_size": 10,
+            "transcript_queue_size": 5,
+            "response_queue_size": 5,
+            "tts_queue_size": 5,
+            "playback_queue_size": 10
+        }
+    }
+    metrics = MetricsTracker()
+    qm = QueueManager(config)
+    context = PipelineContext(config, qm, metrics)
 
-    # 2. Build Pipeline
-    pipeline = VoicePipeline(
-        noise_canceller=noise,
-        vad=vad,
-        stt=stt,
-        llm=llm,
-        tts=tts
-    )
+    # 1. Build Pipeline coordinator
+    pipeline = VoicePipeline(context)
 
-    # 3. Verify setup state
+    # 2. Verify setup state
     assert pipeline.get_state() == PipelineState.IDLE
 
-    # 4. Toggle states and verify behavior
+    # 3. Toggle states and verify behavior
     pipeline.set_state(PipelineState.LISTENING)
     assert pipeline.get_state() == PipelineState.LISTENING
 
     pipeline.set_state(PipelineState.SPEAKING)
     assert pipeline.get_state() == PipelineState.SPEAKING
 
-def test_pipeline_process_frame_compilation():
+def test_pipeline_manager_orchestration():
     """
-    Test that process_frame executes cleanly.
+    Test that PipelineManager initializes context, queues, and workers cleanly.
     """
-    noise = NoiseFactory.get_provider("rnnoise")
-    vad = VADFactory.get_provider("dummy")
-    stt = STTFactory.get_provider("faster_whisper")
-    llm = LLMFactory.get_provider("gemini")
-    tts = TTSFactory.get_provider("elevenlabs")
+    config = {
+        "active_providers": {
+            "noise": "dummy",
+            "vad": "dummy",
+            "stt": "dummy",
+            "llm": "dummy",
+            "tts": "dummy"
+        },
+        "queues": {
+            "audio_queue_size": 10,
+            "speech_queue_size": 10,
+            "transcript_queue_size": 5,
+            "response_queue_size": 5,
+            "tts_queue_size": 5,
+            "playback_queue_size": 10
+        }
+    }
 
-    pipeline = VoicePipeline(
-        noise_canceller=noise,
-        vad=vad,
-        stt=stt,
-        llm=llm,
-        tts=tts
-    )
+    manager = PipelineManager(config)
+    manager.initialize_pipeline()
 
-    # First frame: VAD detects speech, returns empty bytes (accumulating buffer)
-    dummy_in = b"\x00\x01\x02"
-    dummy_out_1 = pipeline.process_frame(dummy_in)
-    assert dummy_out_1 == b""
-    assert pipeline._in_speech is True
+    assert manager.context is not None
+    assert manager.queue_manager is not None
+    assert manager.metrics_tracker is not None
+    assert len(manager.workers) == 8
 
-    # Second frame: VAD returns false (silence), triggers STT -> LLM -> TTS pipeline
-    dummy_out_2 = pipeline.process_frame(dummy_in)
-    
-    # In Phase 1 dummy providers, the TTS synthesizes 100 bytes of b"\x00"
-    assert dummy_out_2 == b"\x00" * 100
-    assert pipeline._in_speech is False
-
+    # Verify coordinator state transitions through context are correct
+    assert manager.pipeline.get_state() == PipelineState.IDLE

@@ -1,0 +1,6 @@
+# benchmarks/results directory — benchmark output files are written here
+# Generated files:
+#   stt_results.json
+#   llm_results.json
+#   tts_results.json
+#   e2e_results.json

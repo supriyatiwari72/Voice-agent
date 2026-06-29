@@ -6,6 +6,10 @@ class BaseTTS(ABC):
     Abstract base class establishing the contract for Text-To-Speech (TTS) synthesis providers.
     """
 
+    def supports_streaming_tts(self) -> bool:
+        """Returns True if this provider can stream synthesis audio chunks."""
+        return hasattr(self, "stream_synthesize")
+
     @abstractmethod
     def synthesize(self, text: str) -> bytes:
         """

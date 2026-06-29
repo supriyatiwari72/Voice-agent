@@ -69,3 +69,25 @@ class SileroVAD(BaseVAD):
             self._speech_detected_logged = True
 
         return is_speech_flag
+
+    def get_speech_probability(self, audio_chunk: bytes) -> float:
+        """
+        Calculates the raw speech probability score from Silero VAD.
+        """
+        if not audio_chunk:
+            return 0.0
+        try:
+            audio_np = np.frombuffer(audio_chunk, dtype=np.int16).astype(np.float32) / 32768.0
+        except ValueError:
+            return 0.0
+
+        if len(audio_np) == 0:
+            return 0.0
+
+        if len(audio_np) < 512:
+            audio_np = np.pad(audio_np, (0, 512 - len(audio_np)), 'constant')
+
+        tensor = torch.from_numpy(audio_np).unsqueeze(0)
+
+        with torch.no_grad():
+            return float(self.model(tensor, self.sample_rate).item())

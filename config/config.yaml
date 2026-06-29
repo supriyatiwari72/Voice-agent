@@ -1,28 +1,64 @@
-# Global settings for the Voice-to-Voice AI Agent MVP pipeline
+# Voice-to-Voice AI Agent — Configuration
+#
+# SWITCH PROVIDERS WITH ONE WORD BELOW. No code changes required.
+#
+# ─── ONE-WORD PROVIDER SWITCHER ────────────────────────────────────────────────
+#
+#   noise:      rnnoise | deepfilternet
+#   vad:        silero | webrtc
+#   stt:        moonshine | faster_whisper | distil_whisper
+#   llm:        groq | openrouter 
+#   tts:        piper_streaming | kokoro_streaming
 
-# Selection of active providers for each pipeline step
-# Valid options must be registered in the respective factories
 active_providers:
   noise: "rnnoise"
-  vad: "dummy"
-  stt: "dummy"
-  llm: "gemini"
-  tts: "elevenlabs"
+  vad: "silero"
+  stt: "distil_whisper"
+  llm: "openrouter"
+  tts: "piper_streaming"
 
-# Audio interface configuration settings
+# System prompt injected into each LLM request.
+system_prompt: "You are Friday, a helpful and concise voice assistant. Always respond in English. Respond in 1-3 short sentences. Do not use markdown, bullet points, or code blocks. Do not introduce yourself unless directly asked."
+
+# Audio interface configuration
 audio:
-  input_device_index: null
-  output_device_index: null
-  sample_rate: 16000          # 16kHz standard for VAD and STT
-  channels: 1                 # Mono
-  bit_depth: 16               # 16-bit depth
-  frame_duration_ms: 30       # standard frame duration for VAD (30ms)
-  chunk_size: 480             # 16000 * 0.030 = 480 samples per chunk
-  buffer_max_size: 100        # Maximum chunks to hold in buffer
+  input_device_index: null        # null = system default microphone
+  output_device_index: null       # null = system default speakers
+  sample_rate: 16000              # 16kHz — required for Silero VAD and Whisper
+  output_sample_rate: 24000       # 24kHz — output rate for TTS playback
+  channels: 1                     # Mono
+  bit_depth: 16                   # 16-bit PCM
+  frame_duration_ms: 30           # VAD frame size (30ms)
+  chunk_size: 480                 # 16000 * 0.030 = 480 samples per frame
+  buffer_max_size: 200            # Max audio chunks held in buffer
 
-# Logging verbosity and configuration
+# Queue size limits for the worker pipeline
+queues:
+  audio_queue_size: 200
+  speech_queue_size: 100
+  transcript_queue_size: 20
+  response_queue_size: 20
+  tts_queue_size: 20
+  playback_queue_size: 50
+
+# Conversation flow
+conversation:
+  followup_enabled: true         # Ask "Anything else?" after each response
+  goodbye_detection: true        # End conversation on "bye" / "goodbye"
+  max_silence_before_listen_ms: 500  # UI hint delay before showing "Listening..."
+
+# Logging configuration
 logging:
   level: "INFO"
   to_console: true
   to_file: true
   file_path: "logs/pipeline.log"
+
+# Memory configuration
+memory:
+  enabled: false
+  max_recent_turns: 20
+  max_turns_before_summary: 50
+  max_context_chars: 12000
+  max_summaries: 10
+  persistence_enabled: true

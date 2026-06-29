@@ -2,19 +2,28 @@ from typing import Dict, Any, Type
 from stt.base import BaseSTT
 from stt.providers.dummy import DummySTT
 from stt.providers.faster_whisper import FasterWhisperSTT
+from stt.providers.distil_whisper import DistilWhisperSTT
+from stt.providers.deepgram_streaming import DeepgramStreamingSTT
+from stt.providers.assemblyai_streaming import AssemblyAIStreamingSTT
+from stt.providers.parakeet_streaming import ParakeetStreamingSTT
+from stt.providers.moonshine import MoonshineSTT
 
 class STTFactory:
     """
     Factory class responsible for validating and resolving BaseSTT instances.
-    Supports DummySTT and FasterWhisperSTT concrete implementations.
     """
     _providers: Dict[str, Type[BaseSTT]] = {
-        "whisper": DummySTT, # Placeholder for future OpenAI API or local Whisper
+        "whisper": DummySTT,
         "faster_whisper": FasterWhisperSTT,
+        "distil_whisper": DistilWhisperSTT,
+        "moonshine": MoonshineSTT,
         "deepgram": DummySTT,
-        "assemblyai": DummySTT,
+        "deepgram_streaming": DeepgramStreamingSTT,
+        "assemblyai_streaming": AssemblyAIStreamingSTT,
+        "parakeet_streaming": ParakeetStreamingSTT,
         "google": DummySTT,
-        "dummy": DummySTT
+        "assemblyai": DummySTT,
+        "dummy": DummySTT,
     }
 
     @classmethod

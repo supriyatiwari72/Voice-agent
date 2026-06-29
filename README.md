@@ -161,3 +161,43 @@ To add a new provider (e.g. adding `Deepgram` STT):
    ```
 2. **Register in Factory**: Add the class mapping to the registry inside `stt/factory.py`.
 3. **Configure**: Update `config.yaml` to set `stt.provider` to `"deepgram"` and add any required API keys to `models.yaml` or `.env`.
+
+---
+
+## 5. Quick Start
+
+### Prerequisites
+- Python 3.10+
+- [Ollama](https://ollama.ai) running locally with `qwen2.5:3b`:
+  ```bash
+  ollama serve && ollama pull qwen2.5:3b
+  ```
+- Kokoro TTS model files in `weights/`:
+  - `kokoro-v0_19.onnx` + `voices.bin` (download from [HuggingFace](https://huggingface.co/))
+- Microphone and speakers connected
+
+### Setup
+```bash
+# Create virtual environment
+python3 -m venv venv
+source venv/bin/activate
+
+# Install dependencies
+pip install -r requirements.txt
+```
+
+### Run the Voice Agent
+```bash
+python voice_agent.py
+```
+
+### CLI Options
+```bash
+python voice_agent.py --list           # List available providers
+python voice_agent.py --stt distil_whisper --llm qwen2.5_3b --tts kokoro
+```
+
+### Run Tests
+```bash
+python -m pytest tests/ -v
+```
