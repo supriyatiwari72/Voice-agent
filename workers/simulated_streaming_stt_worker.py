@@ -40,7 +40,7 @@ class SimulatedStreamingSTTWorker(BaseWorker):
             hasattr(self.stt, "stop_stream") and 
             type(self.stt).__name__ not in ("MagicMock", "Mock")):
             def on_transcript(chunk, is_final):
-                if self.context.interruption_event.is_set() or payload.request_id != self.context.get_active_request_id():
+                if self.context.is_request_cancelled(payload.request_id) or payload.request_id != self.context.get_active_request_id():
                     return
                 
                 # Record first_partial_transcript_ms
@@ -62,7 +62,7 @@ class SimulatedStreamingSTTWorker(BaseWorker):
             # Stream the audio data in chunks
             chunk_size = 4096
             for offset in range(0, len(payload.audio), chunk_size):
-                if self.context.interruption_event.is_set() or payload.request_id != self.context.get_active_request_id():
+                if self.context.is_request_cancelled(payload.request_id) or payload.request_id != self.context.get_active_request_id():
                     break
                 chunk = payload.audio[offset:offset+chunk_size]
                 self.stt.stream_audio(chunk)
@@ -107,7 +107,7 @@ class SimulatedStreamingSTTWorker(BaseWorker):
                     timestamp=payload.user_done_timestamp
                 )
 
-                if self.context.interruption_event.is_set() or payload.request_id != self.context.get_active_request_id():
+                if self.context.is_request_cancelled(payload.request_id) or payload.request_id != self.context.get_active_request_id():
                     logger.info("SimulatedStreamingSTTWorker: request interrupted/stale. Aborting stream.")
                     return
 

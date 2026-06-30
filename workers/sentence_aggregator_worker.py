@@ -29,7 +29,7 @@ class SentenceAggregatorWorker(BaseWorker):
             return
 
         # Verify request is active and not interrupted
-        if self.context.interruption_event.is_set() or payload.request_id != self.context.get_active_request_id():
+        if self.context.is_request_cancelled(payload.request_id) or payload.request_id != self.context.get_active_request_id():
             logger.info(f"SentenceAggregatorWorker: request {payload.request_id} is stale/interrupted. Dropping.")
             self._buffer = ""
             return

@@ -29,7 +29,7 @@ class LLMWorker(BaseWorker):
             return
 
         # Verify request is active before starting LLM call
-        if self.context.interruption_event.is_set() or payload.request_id != self.context.get_active_request_id():
+        if self.context.is_request_cancelled(payload.request_id) or payload.request_id != self.context.get_active_request_id():
             logger.info(f"LLMWorker: request {payload.request_id} is stale/interrupted. Dropping before generation.")
             return
 
@@ -44,7 +44,7 @@ class LLMWorker(BaseWorker):
         stream = self.llm.generate_stream(payload.text)
         for token in stream:
             # Continuously check for interruptions mid-stream
-            if self.context.interruption_event.is_set() or payload.request_id != self.context.get_active_request_id():
+            if self.context.is_request_cancelled(payload.request_id) or payload.request_id != self.context.get_active_request_id():
                 logger.info(f"LLMWorker: request {payload.request_id} is stale/interrupted. Aborting token stream.")
                 return
 
@@ -56,7 +56,7 @@ class LLMWorker(BaseWorker):
             response_text += token
 
         # Check interruption event after stream completion
-        if self.context.interruption_event.is_set() or payload.request_id != self.context.get_active_request_id():
+        if self.context.is_request_cancelled(payload.request_id) or payload.request_id != self.context.get_active_request_id():
             logger.info(f"LLMWorker: request {payload.request_id} is stale/interrupted. Dropping after generation.")
             return
 

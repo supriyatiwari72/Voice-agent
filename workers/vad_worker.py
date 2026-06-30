@@ -154,8 +154,10 @@ class VADWorker(BaseWorker):
                 logger.info(f"Barge-in detected in state {current_state.name}. Triggering interruption.")
                 self.context.interruption_event.set()
                 self.context.barge_in_occurred.set()
+                
+                interrupted_req = self.context.get_active_request_id()
                 interruption_payload = InterruptionPayload(
-                    request_id=self._current_request_id,
+                    request_id=interrupted_req or self._current_request_id,
                     timestamp=time.time(),
                 )
                 if self.context.queue_manager.interruption_queue:

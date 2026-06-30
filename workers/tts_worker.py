@@ -29,7 +29,7 @@ class TTSWorker(BaseWorker):
             return
 
         # Verify request is active before calling TTS
-        if self.context.interruption_event.is_set() or payload.request_id != self.context.get_active_request_id():
+        if self.context.is_request_cancelled(payload.request_id) or payload.request_id != self.context.get_active_request_id():
             logger.info(f"TTSWorker: request {payload.request_id} is stale/interrupted. Dropping payload before synthesis.")
             return
 
@@ -40,7 +40,7 @@ class TTSWorker(BaseWorker):
         audio_bytes = self.tts.synthesize(payload.response)
         
         # Verify request is active after synthesis is done
-        if self.context.interruption_event.is_set() or payload.request_id != self.context.get_active_request_id():
+        if self.context.is_request_cancelled(payload.request_id) or payload.request_id != self.context.get_active_request_id():
             logger.info(f"TTSWorker: request {payload.request_id} is stale/interrupted. Discarding synthesis output.")
             return
 

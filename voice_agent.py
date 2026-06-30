@@ -259,6 +259,7 @@ def main() -> None:
     listener.register()
 
     # ── Start Pipeline ─────────────────────────────────────────────────────
+    print_banner(config)
     manager.start()
     logger.info("Pipeline started. Microphone is active.")
 
@@ -271,11 +272,11 @@ def main() -> None:
         manager.context.set_state(PipelineState.SPEAKING)
         
         print("\n[Friday]")
-        print("Hello! I'm Friday. How can I help you today?\n", flush=True)
+        print("Hello, how can I help you?\n", flush=True)
         
         greeting_payload = SentencePayload(
             request_id=greeting_id,
-            text="Hello! I'm Friday. How can I help you today?",
+            text="Hello, how can I help you?",
             is_final=True,
             user_done_timestamp=time.time()
         )

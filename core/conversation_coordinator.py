@@ -48,9 +48,12 @@ class ConversationCoordinator:
             # Cancel the active request immediately
             active_req = self.context.get_active_request_id()
             if active_req:
-                self.context.cancel_request(active_req)
-                if self.context.playback_controller:
-                    self.context.playback_controller.stop()
+                if hasattr(self.context, "interruption_manager") and self.context.interruption_manager:
+                    self.context.interruption_manager.handle_interruption(active_req)
+                else:
+                    self.context.cancel_request(active_req)
+                    if self.context.playback_controller:
+                        self.context.playback_controller.stop()
 
         # Create a new conversation turn and transition state to LISTENING
         self.active_turn_id = f"turn-{uuid.uuid4()}"
