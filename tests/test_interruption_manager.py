@@ -73,8 +73,8 @@ def test_interruption_manager_flushing_and_state(mock_context_and_queues):
     context.set_state(PipelineState.SPEAKING)
     im.handle_interruption("req-1")
 
-    # Verify queues are empty
-    assert qm.transcript_queue.empty() is True
+    # Verify downstream queues are empty, but STT queues are preserved
+    assert qm.transcript_queue.qsize() == 1
     assert qm.partial_response_queue.empty() is True
     assert qm.tts_queue.empty() is True
     assert qm.playback_queue.empty() is True

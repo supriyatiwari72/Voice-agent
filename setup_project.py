@@ -341,7 +341,10 @@ def main() -> None:
     step_venv()
 
     if not in_venv() and os.path.isdir(os.path.join(PROJECT_DIR, "venv")):
-        venv_python = os.path.join(PROJECT_DIR, "venv", "bin", "python")
+        if platform.system() == "Windows":
+            venv_python = os.path.join(PROJECT_DIR, "venv", "Scripts", "python.exe")
+        else:
+            venv_python = os.path.join(PROJECT_DIR, "venv", "bin", "python")
         if os.path.isfile(venv_python):
             info("Re-running setup inside virtual environment…")
             os.execv(venv_python, [venv_python, __file__] + sys.argv[1:])

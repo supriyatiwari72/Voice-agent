@@ -120,12 +120,14 @@ class ConsolePipelineListener:
 
     def _on_state_changed(self, state) -> None:
         from pipeline.pipeline_state import PipelineState
-        if state == PipelineState.LISTENING:
+        if state == PipelineState.IDLE:
+            print("\n[Speak Now...]\n", flush=True)
+        elif state == PipelineState.LISTENING:
             print("\n[Listening...]\n", flush=True)
-        elif state == PipelineState.USER_SPEAKING:
-            print("\n[User speaking...]\n", flush=True)
         elif state == PipelineState.PROCESSING:
-            print("\n[Processing...]\n", flush=True)
+            print("\n[Understanding...]\n", flush=True)
+        elif state == PipelineState.THINKING:
+            print("\n[Thinking...]\n", flush=True)
         elif state == PipelineState.SPEAKING:
             pass
 
@@ -230,8 +232,21 @@ def main() -> None:
 
     # Wire PTT callback: clicking Speak Now sets ptt_active on the context
     def _ptt_callback():
+        current_state = manager.context.get_state()
         manager.context.ptt_active.set()
-        logger.info("PTT activated: user clicked Speak Now button.")
+        logger.info(f"PTT activated: user clicked Speak Now button in state {current_state.name}.")
+
+        # If Friday is speaking, trigger manual interruption immediately
+        if current_state == PipelineState.SPEAKING:
+            logger.info("Interruption triggered: user interrupted Friday playback via Speak Now click.")
+            # Signal workers to drop stale chunks
+            manager.context.interruption_event.set()
+            # Stop audio playback IMMEDIATELY — no queue worker latency
+            manager.player.interrupt()
+            # Handle full interruption lifecycle (state transitions, queue flushes, events)
+            import uuid
+            active_req_id = manager.context.get_active_request_id() or f"manual-interrupt-{uuid.uuid4()}"
+            manager.interruption_manager.handle_interruption(active_req_id)
 
     popup.ptt_callback = _ptt_callback
 
@@ -256,11 +271,11 @@ def main() -> None:
         manager.context.set_state(PipelineState.SPEAKING)
         
         print("\n[Friday]")
-        print("Hello, how can I assist you today?\n", flush=True)
+        print("Hello! I'm Friday. How can I help you today?\n", flush=True)
         
         greeting_payload = SentencePayload(
             request_id=greeting_id,
-            text="Hello, how can I assist you today?",
+            text="Hello! I'm Friday. How can I help you today?",
             is_final=True,
             user_done_timestamp=time.time()
         )

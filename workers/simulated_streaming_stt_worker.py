@@ -30,7 +30,7 @@ class SimulatedStreamingSTTWorker(BaseWorker):
 
         # Transit pipeline state to TRANSCRIBING
         from pipeline.pipeline_state import PipelineState
-        self.context.set_state(PipelineState.TRANSCRIBING)
+        self.context.set_state(PipelineState.PROCESSING)
 
         start_time = time.time()
         

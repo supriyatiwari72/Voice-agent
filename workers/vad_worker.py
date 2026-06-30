@@ -6,7 +6,7 @@ from typing import Any
 from core.worker_base import BaseWorker
 from core.payloads import AudioPayload, SpeechPayload, StreamingAudioPayload, InterruptionPayload
 from pipeline.pipeline_state import PipelineState
-from core.events import EventType
+from core.events import EventType, SpeechStartedEvent, SpeechEndedEvent
 from core.eos_manager import EOSManager
 
 logger = logging.getLogger(__name__)
@@ -18,9 +18,7 @@ _BARGE_IN_STATES = frozenset([PipelineState.SPEAKING])
 # States in which we are busy processing the previous utterance.
 _BUSY_STATES = frozenset([
     PipelineState.PROCESSING,
-    PipelineState.TRANSCRIBING,
     PipelineState.THINKING,
-    PipelineState.GENERATING,
 ])
 
 
@@ -121,17 +119,15 @@ class VADWorker(BaseWorker):
 
         frame_rms = _calculate_rms(payload.audio)
         
-        # Call Silero VAD to get probability
+        # Call VAD to get probability
         confidence_score = 0.0
         is_mock_or_dummy = type(self.vad).__name__ in ("MagicMock", "Mock", "DummyVAD")
         
-        # Check if the active provider is dummy via config
         if not is_mock_or_dummy and self.context and hasattr(self.context, "config") and self.context.config:
             is_mock_or_dummy = (self.context.config.get("active_providers", {}).get("vad", "") or "").lower() == "dummy"
 
         if hasattr(self.vad, "get_speech_probability"):
             confidence_score = self.vad.get_speech_probability(payload.audio)
-            # handle mocks
             if type(confidence_score).__name__ in ("MagicMock", "Mock"):
                 is_speech = self.vad.is_speech(payload.audio)
                 confidence_score = 1.0 if is_speech else 0.0
@@ -144,22 +140,12 @@ class VADWorker(BaseWorker):
 
         # Handle speech started (voice onset)
         if eos_res["speech_started"]:
-            # ── Push-to-talk gate ─────────────────────────────────────────────
-            # In LISTENING state, only start a turn when the user has explicitly
-            # clicked the "Speak Now" button (ptt_active is set).
-            # In SPEAKING state (barge-in), skip the gate — interruption works automatically.
-            is_barge_in_candidate = current_state in _BARGE_IN_STATES
-            has_ptt = hasattr(self.context, "ptt_active")
-            if not is_barge_in_candidate and has_ptt and not self.context.ptt_active.is_set():
-                logger.debug("VADWorker: speech_started ignored — ptt_active not set (no button click).")
-                self.eos_manager.reset()
-                return
-
+            # Hands-free VAD: we bypass ptt_active check and start capturing automatically.
             self._current_request_id = payload.request_id
             self._in_speech = True
 
-            
-            # Start timer for speech onset latency metric
+            # Record speech start timestamp in clock
+            self.context.audio_clock.reset()
             self.context.metrics.record_metric("speech_detection_latency_ms", (time.time() - payload.created_at) * 1000)
             
             # Interruption check
@@ -167,8 +153,6 @@ class VADWorker(BaseWorker):
             if current_state in _BARGE_IN_STATES:
                 logger.info(f"Barge-in detected in state {current_state.name}. Triggering interruption.")
                 self.context.interruption_event.set()
-                # Signal to LLM worker that a barge-in occurred — it will
-                # apply a focused-listening delay before answering.
                 self.context.barge_in_occurred.set()
                 interruption_payload = InterruptionPayload(
                     request_id=self._current_request_id,
@@ -177,19 +161,21 @@ class VADWorker(BaseWorker):
                 if self.context.queue_manager.interruption_queue:
                     self.context.queue_manager.interruption_queue.put(interruption_payload)
                 is_barge_in = True
-                # Extend EOS patience so VAD waits longer before cutting the
-                # user off mid-question after a barge-in (roughly 2 extra seconds)
                 self.eos_manager.extend_silence_patience(extra_frames=67)
             
-            self.context.set_active_request_id(self._current_request_id)
-            self.context.set_state(PipelineState.USER_SPEAKING)
-            self.context.trigger_event(EventType.SPEECH_STARTED, self._current_request_id)
+            # Trigger Typed Event SpeechStartedEvent
+            self.context.trigger_event(
+                EventType.SPEECH_STARTED,
+                SpeechStartedEvent(request_id=self._current_request_id, timestamp=time.time())
+            )
+            if not getattr(self.context, "conversation_coordinator", None):
+                self.context.set_active_request_id(self._current_request_id)
+                self.context.set_state(PipelineState.LISTENING)
             logger.info(f"Speech Started: request_id={self._current_request_id}")
             
             # Stream the starting pre-speech history
             if self._use_streaming:
                 if is_barge_in:
-                    # Clear echo-contaminated history BEFORE joining
                     self._pre_speech_history = []
                 history = b"".join(self._pre_speech_history)
                 if history:
@@ -202,13 +188,7 @@ class VADWorker(BaseWorker):
                     self.output_queue.put(start_payload)
             else:
                 if is_barge_in:
-                    # Clear echo-contaminated history BEFORE joining
                     self._pre_speech_history = []
-                    # Flush any stale speech/transcript payloads from prior response
-                    try:
-                        self.context.queue_manager.flush_queue("speech_queue")
-                    except Exception:
-                        pass
                 self._speech_buffer = b"".join(self._pre_speech_history)
                 self._silence_chunks = []
 
@@ -224,13 +204,12 @@ class VADWorker(BaseWorker):
                 self.output_queue.put(chunk_payload)
             else:
                 self._speech_buffer += payload.audio
-                # Track silence frame chunk buffer to support silence stripping
                 if confidence_score <= self.eos_manager.speech_end_threshold:
                     self._silence_chunks.append(payload.audio)
                 else:
                     self._silence_chunks = []
 
-            # Safety duration limit (10s ~ 320,000 bytes)
+            # Safety duration limit (10s)
             if len(self._speech_buffer) >= 320000 or (self._use_streaming and self.eos_manager.speech_chunks_count >= 333):
                 logger.warning("Max utterance duration exceeded. Finalizing.")
                 self._finalize_utterance(payload, strip_silence=False)
@@ -238,7 +217,6 @@ class VADWorker(BaseWorker):
 
         # Handle speech ended (EOS endpoint)
         if eos_res["speech_ended"]:
-            # Record endpointing latency
             if self.eos_manager.last_speech_time:
                 self.context.metrics.record_metric("eos_detection_latency_ms", (time.time() - self.eos_manager.last_speech_time) * 1000)
             
@@ -251,7 +229,7 @@ class VADWorker(BaseWorker):
             if len(self._pre_speech_history) > self._pad_frames:
                 self._pre_speech_history.pop(0)
 
-        # Synchronize silence frames counter for backward compatibility with unit tests
+        # Synchronize silence frames counter
         self._silence_frames = self.eos_manager.silence_counter
 
     def _finalize_utterance(self, payload: AudioPayload, strip_silence: bool = True) -> None:
@@ -265,27 +243,30 @@ class VADWorker(BaseWorker):
                 timestamp=user_done_timestamp
             )
             self.output_queue.put(final_payload)
-            self.context.set_state(PipelineState.PROCESSING)
-            self.context.trigger_event(EventType.SPEECH_ENDED, self._current_request_id)
+            self.context.trigger_event(
+                EventType.SPEECH_ENDED,
+                SpeechEndedEvent(request_id=self._current_request_id, timestamp=user_done_timestamp)
+            )
         else:
             if strip_silence:
                 silence_len = sum(len(c) for c in self._silence_chunks)
                 if silence_len > 0:
                     self._speech_buffer = self._speech_buffer[:-silence_len]
             
-            duration = len(self._speech_buffer) / 32000.0
-            seg_rms = _calculate_rms(self._speech_buffer)
-            
-            # Validation gates (duration check only — trust VAD model for voice classification)
+            # Validation gates
             if len(self._speech_buffer) < self._min_speech_bytes:
                 logger.warning(f"Discarding turn: size={len(self._speech_buffer)} < {self._min_speech_bytes}")
-                self.context.set_state(PipelineState.LISTENING)
+                # Transition back to IDLE via Coordinator/Context
+                self.context.set_state(PipelineState.IDLE)
                 self._reset()
                 return
 
-            
-            self.context.set_state(PipelineState.PROCESSING)
-            self.context.trigger_event(EventType.SPEECH_ENDED, self._current_request_id)
+            self.context.trigger_event(
+                EventType.SPEECH_ENDED,
+                SpeechEndedEvent(request_id=self._current_request_id, timestamp=user_done_timestamp)
+            )
+            if not getattr(self.context, "conversation_coordinator", None):
+                self.context.set_state(PipelineState.PROCESSING)
             
             speech_payload = SpeechPayload(
                 request_id=self._current_request_id or payload.request_id,
@@ -304,7 +285,5 @@ class VADWorker(BaseWorker):
         self._silence_chunks = []
         self._current_request_id = None
         self.eos_manager.reset()
-        # Clear PTT gate so the Speak Now button must be clicked again for the next turn
         if hasattr(self.context, "ptt_active"):
             self.context.ptt_active.clear()
-

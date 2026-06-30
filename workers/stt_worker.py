@@ -4,6 +4,7 @@ from typing import Any, Dict
 from core.worker_base import BaseWorker
 from core.payloads import SpeechPayload, PartialTranscriptPayload, StreamingAudioPayload
 from pipeline.pipeline_state import PipelineState
+from core.events import EventType, PartialTranscriptEvent, FinalTranscriptEvent
 
 logger = logging.getLogger(__name__)
 
@@ -11,13 +12,10 @@ logger = logging.getLogger(__name__)
 class STTWorker(BaseWorker):
     """
     Production STT Worker.
-
     Receives either:
     1. SpeechPayload (batch path): runs offline batch transcription and emits final PartialTranscriptPayload.
     2. StreamingAudioPayload (streaming path): streams raw chunks dynamically to streaming providers,
        or buffers them locally for batch engines, executing batch transcription on final chunk.
-
-    Stabilizes transcripts before emitting.
     """
 
     def __init__(self, context: Any, input_queue: Any, output_queue: Any, stt: Any):
@@ -51,12 +49,14 @@ class STTWorker(BaseWorker):
         logger.warning(f"Unexpected payload type in STTWorker: {type(payload)}")
 
     def _handle_speech_payload(self, payload: SpeechPayload) -> None:
-        if self.stop_event.is_set() or self.context.interruption_event.is_set() or \
-                payload.request_id != self.context.get_active_request_id():
+        if (self.stop_event.is_set() or 
+            self.context.is_request_cancelled(payload.request_id) or
+            self.context.interruption_event.is_set() or
+            payload.request_id != self.context.get_active_request_id()):
             logger.info(f"STTWorker: request {payload.request_id} is stale/interrupted. Skipping.")
             return
 
-        self.context.set_state(PipelineState.TRANSCRIBING)
+        self.context.set_state(PipelineState.PROCESSING)
         start_time = time.time()
 
         audio_cfg = self.context.config.get("audio", {})
@@ -77,8 +77,10 @@ class STTWorker(BaseWorker):
 
     def _handle_streaming_audio_payload(self, payload: StreamingAudioPayload) -> None:
         # Verify request is active
-        if self.stop_event.is_set() or self.context.interruption_event.is_set() or \
-                payload.request_id != self.context.get_active_request_id():
+        if (self.stop_event.is_set() or 
+            self.context.is_request_cancelled(payload.request_id) or
+            self.context.interruption_event.is_set() or
+            payload.request_id != self.context.get_active_request_id()):
             self._audio_buffers.pop(payload.request_id, None)
             self._last_emitted_transcripts.pop(payload.request_id, None)
             if self._active_stream_id == payload.request_id:
@@ -95,7 +97,6 @@ class STTWorker(BaseWorker):
         if hasattr(self.stt, "supports_streaming_audio"):
             supports_stream = self.stt.supports_streaming_audio()
         else:
-            # Fallback check based on standard methods
             supports_stream = (
                 hasattr(self.stt, "start_stream")
                 and hasattr(self.stt, "stream_audio")
@@ -114,7 +115,7 @@ class STTWorker(BaseWorker):
                 self._stop_provider_stream()
         else:
             # ── Buffer locally for batch execution at EOS ───────────────
-            self.context.set_state(PipelineState.USER_SPEAKING)
+            self.context.set_state(PipelineState.LISTENING)
             self._audio_buffers[payload.request_id] = (
                 self._audio_buffers.get(payload.request_id, b"")
                 + payload.audio_chunk
@@ -125,15 +126,13 @@ class STTWorker(BaseWorker):
                 self._run_batch_from_stream(payload.request_id, complete_audio, payload.timestamp)
 
     def _start_provider_stream(self, payload: StreamingAudioPayload) -> None:
-        self.context.set_state(PipelineState.TRANSCRIBING)
+        self.context.set_state(PipelineState.PROCESSING)
         self._streaming_active = True
         self._active_stream_id = payload.request_id
         self._last_emitted_transcripts[payload.request_id] = ""
 
         def on_transcript(chunk: str, is_final: bool) -> None:
-            # Verify request context is still active
-            if self.stop_event.is_set() or self.context.interruption_event.is_set() or \
-                    payload.request_id != self.context.get_active_request_id():
+            if self.stop_event.is_set() or self.context.is_request_cancelled(payload.request_id):
                 return
 
             # Apply transcript stabilization
@@ -156,7 +155,6 @@ class STTWorker(BaseWorker):
             words_new = cleaned_new.split()
             words_old = cleaned_old.split()
 
-            # Transcript is stabilized if it's final or has more words or word values differ
             if is_final or len(words_new) > len(words_old) or (len(words_new) == len(words_old) and words_new != words_old):
                 self._last_emitted_transcripts[payload.request_id] = cleaned_new
                 
@@ -165,16 +163,27 @@ class STTWorker(BaseWorker):
                     first_stt_lat = (time.time() - payload.timestamp) * 1000
                     self.context.metrics.record_metric("first_partial_transcript_ms", first_stt_lat)
 
+                # Emit Typed Events
+                if is_final:
+                    self.context.trigger_event(
+                        EventType.ERROR_EVENT, 
+                        FinalTranscriptEvent(request_id=payload.request_id, text=cleaned_new, timestamp=time.time())
+                    )
+                else:
+                    self.context.trigger_event(
+                        EventType.ERROR_EVENT,
+                        PartialTranscriptEvent(request_id=payload.request_id, text_chunk=cleaned_new[len(cleaned_old):].strip(), timestamp=time.time())
+                    )
+
                 out = PartialTranscriptPayload(
                     request_id=payload.request_id,
-                    text_chunk=cleaned_new[len(cleaned_old):].strip() + " ", # Emit difference chunk
+                    text_chunk=cleaned_new[len(cleaned_old):].strip() + " ", 
                     is_final=is_final,
                     timestamp=payload.timestamp
                 )
                 if is_final:
-                    # Print dialogue to terminal matching console user output format
                     print(f"\n[You]\n{cleaned_new}\n", flush=True)
-                    out.text_chunk = cleaned_new # send full text on final
+                    out.text_chunk = cleaned_new
                 
                 if self.output_queue:
                     self.output_queue.put(out)
@@ -191,12 +200,10 @@ class STTWorker(BaseWorker):
             self._active_stream_id = None
 
     def _is_hallucination(self, text: str, duration: float) -> bool:
-        """Detect Whisper silence/noise hallucinations (like short 'Thank you' or 'You're welcome')."""
         cleaned = text.strip().lower().rstrip(".,!?")
         if not cleaned:
             return True
         
-        # Whisper commonly hallucinates these phrases on silence, breathing or room static
         hallucinations = {
             "thank you", "thank you very much", "you're welcome", "you", 
             "thanks for watching", "subtitles by", "bye", "goodbye"
@@ -207,7 +214,7 @@ class STTWorker(BaseWorker):
         return False
 
     def _run_batch_from_stream(self, request_id: str, audio: bytes, timestamp: float) -> None:
-        self.context.set_state(PipelineState.TRANSCRIBING)
+        self.context.set_state(PipelineState.PROCESSING)
         start_time = time.time()
         
         audio_cfg = self.context.config.get("audio", {})
@@ -223,19 +230,25 @@ class STTWorker(BaseWorker):
         
         if self._is_hallucination(text, duration):
             logger.warning(f"STTWorker: Discarding hallucinated transcript '{text}' (duration={duration:.2f}s)")
-            self.context.set_state(PipelineState.LISTENING)
+            self.context.set_state(PipelineState.IDLE)
             return
 
-        # Dialogue console print
         print(f"\n[You]\n{text}\n", flush=True)
         
-        if self.stop_event.is_set() or self.context.interruption_event.is_set() or \
-                request_id != self.context.get_active_request_id():
+        if (self.stop_event.is_set() or 
+            self.context.is_request_cancelled(request_id) or
+            self.context.interruption_event.is_set() or
+            request_id != self.context.get_active_request_id()):
             return
             
         if self.context.streaming_context.check_and_record_first_transcript(request_id):
             first_stt_lat = (time.time() - timestamp) * 1000
             self.context.metrics.record_metric("first_partial_transcript_ms", first_stt_lat)
+
+        self.context.trigger_event(
+            EventType.ERROR_EVENT, 
+            FinalTranscriptEvent(request_id=request_id, text=text, timestamp=time.time())
+        )
             
         out = PartialTranscriptPayload(
             request_id=request_id,
@@ -257,18 +270,25 @@ class STTWorker(BaseWorker):
 
         if self._is_hallucination(text, duration):
             logger.warning(f"STTWorker: Discarding hallucinated transcript '{text}' (duration={duration:.2f}s)")
-            self.context.set_state(PipelineState.LISTENING)
+            self.context.set_state(PipelineState.IDLE)
             return
 
         print(f"\n[You]\n{text}\n", flush=True)
 
-        if self.stop_event.is_set() or self.context.interruption_event.is_set() or \
-                payload.request_id != self.context.get_active_request_id():
+        if (self.stop_event.is_set() or 
+            self.context.is_request_cancelled(payload.request_id) or
+            self.context.interruption_event.is_set() or
+            payload.request_id != self.context.get_active_request_id()):
             return
 
         if self.context.streaming_context.check_and_record_first_transcript(payload.request_id):
             first_stt_lat = (time.time() - payload.user_done_timestamp) * 1000
             self.context.metrics.record_metric("first_partial_transcript_ms", first_stt_lat)
+
+        self.context.trigger_event(
+            EventType.ERROR_EVENT, 
+            FinalTranscriptEvent(request_id=payload.request_id, text=text, timestamp=time.time())
+        )
 
         out = PartialTranscriptPayload(
             request_id=payload.request_id,
@@ -284,3 +304,4 @@ class STTWorker(BaseWorker):
         self._stop_provider_stream()
         self._audio_buffers.clear()
         self._last_emitted_transcripts.clear()
+        self.context.set_state(PipelineState.IDLE)

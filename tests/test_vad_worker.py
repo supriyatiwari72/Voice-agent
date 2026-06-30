@@ -25,6 +25,7 @@ def mock_context_and_queues():
     metrics = MetricsTracker()
     qm = QueueManager(config)
     context = PipelineContext(config, qm, metrics)
+    context.ptt_active.set()
     return context, qm
 
 def test_vad_worker_speech_accumulation(mock_context_and_queues):
@@ -49,8 +50,8 @@ def test_vad_worker_speech_accumulation(mock_context_and_queues):
     
     worker.process_loop_step()
     
-    # Should transition to USER_SPEAKING and accumulate, output remains empty
-    assert context.get_state() == PipelineState.USER_SPEAKING
+    # Should transition to LISTENING and accumulate, output remains empty
+    assert context.get_state() == PipelineState.LISTENING
     assert worker._speech_buffer == b"\x01\x02"
     assert qm.transcript_queue.empty() is True
     
@@ -98,6 +99,7 @@ def test_vad_single_pause_does_not_terminate():
         }
     }
     context = PipelineContext(config, QueueManager(config), MetricsTracker())
+    context.ptt_active.set()
     mock_vad = MagicMock()
     worker = VADWorker(context, context.queue_manager.speech_queue, context.queue_manager.transcript_queue, mock_vad)
 
@@ -137,6 +139,7 @@ def test_vad_multiple_pauses_below_threshold():
         }
     }
     context = PipelineContext(config, QueueManager(config), MetricsTracker())
+    context.ptt_active.set()
     mock_vad = MagicMock()
     worker = VADWorker(context, context.queue_manager.speech_queue, context.queue_manager.transcript_queue, mock_vad)
 
@@ -173,6 +176,7 @@ def test_vad_silence_threshold_finalizes_correctly():
         }
     }
     context = PipelineContext(config, QueueManager(config), MetricsTracker())
+    context.ptt_active.set()
     mock_vad = MagicMock()
     worker = VADWorker(context, context.queue_manager.speech_queue, context.queue_manager.transcript_queue, mock_vad)
 
@@ -210,6 +214,7 @@ def test_vad_short_clicks_are_discarded():
         }
     }
     context = PipelineContext(config, QueueManager(config), MetricsTracker())
+    context.ptt_active.set()
     mock_vad = MagicMock()
     worker = VADWorker(context, context.queue_manager.speech_queue, context.queue_manager.transcript_queue, mock_vad)
 
@@ -243,6 +248,7 @@ def test_vad_short_commands_are_preserved():
         }
     }
     context = PipelineContext(config, QueueManager(config), MetricsTracker())
+    context.ptt_active.set()
     mock_vad = MagicMock()
     worker = VADWorker(context, context.queue_manager.speech_queue, context.queue_manager.transcript_queue, mock_vad)
 

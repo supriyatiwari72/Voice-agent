@@ -3,9 +3,12 @@ import os
 import threading
 import time
 import uuid
+import collections
 from typing import Dict, Any, Callable, Optional
 from pipeline.pipeline_state import PipelineState
 from core.events import EventType
+from core.cancellation_token import CancellationToken
+from core.audio_clock import AudioClock
 
 logger = logging.getLogger(__name__)
 
@@ -54,16 +57,11 @@ class PipelineContext:
         # Coordination events
         self.shutdown_event = threading.Event()
         self.interruption_event = threading.Event()
-        # Set when a barge-in occurs so the LLM worker can apply
-        # a focused-listening delay before generating a response.
         self.barge_in_occurred = threading.Event()
-        # Push-to-talk gate: VAD only captures a turn when this is set.
-        # Cleared automatically by VADWorker after speech is finalized.
-        # Not required for barge-in (interruption during Friday's speech).
         self.ptt_active = threading.Event()
         
         # Thread-safe pipeline state management
-        self._state = PipelineState.IDLE
+        self._state = PipelineState.INITIALIZING
         self._state_lock = threading.Lock()
 
         # Thread-safe event callback registry
@@ -76,6 +74,49 @@ class PipelineContext:
         # Interruption callbacks
         self._interrupt_callbacks = []
         self._interrupt_lock = threading.Lock()
+
+        # Pluggable PlaybackController reference
+        self.playback_controller = None
+
+        # Pluggable ConversationCoordinator reference
+        self.conversation_coordinator = None
+
+        # Shared audio clock (defaults to 16kHz mono)
+        self.audio_clock = AudioClock(sample_rate=config.get("audio", {}).get("sample_rate", 16000))
+
+        # Acoustic Echo Cancellation reference buffer
+        self.speaker_lock = threading.Lock()
+        self.speaker_reference = collections.deque(maxlen=32000)  # 2 seconds of 16kHz samples
+
+        # Cancellation Token Repository
+        self._cancellation_tokens: Dict[str, CancellationToken] = {}
+        self._token_lock = threading.Lock()
+
+    def get_cancellation_token(self, request_id: str) -> CancellationToken:
+        """Retrieves or creates a CancellationToken for the specified request_id."""
+        with self._token_lock:
+            if request_id not in self._cancellation_tokens:
+                self._cancellation_tokens[request_id] = CancellationToken()
+            return self._cancellation_tokens[request_id]
+
+    def cancel_request(self, request_id: str) -> None:
+        """Triggers cancellation on the CancellationToken of the specified request_id."""
+        with self._token_lock:
+            if request_id not in self._cancellation_tokens:
+                self._cancellation_tokens[request_id] = CancellationToken()
+            self._cancellation_tokens[request_id].cancel()
+            logger.info(f"Context: request {request_id} has been cancelled.")
+
+    def is_request_cancelled(self, request_id: str) -> bool:
+        """Checks if a request has been cancelled."""
+        with self._token_lock:
+            token = self._cancellation_tokens.get(request_id)
+            return token.is_cancelled() if token else False
+
+    def remove_cancellation_token(self, request_id: str) -> None:
+        """Disposes of the request's CancellationToken."""
+        with self._token_lock:
+            self._cancellation_tokens.pop(request_id, None)
 
     def get_state(self) -> PipelineState:
         """
@@ -119,6 +160,13 @@ class PipelineContext:
         Triggers an event and runs all registered callback listeners.
         """
         logger.info(f"System event triggered: {event_type.name}")
+        
+        if self.conversation_coordinator:
+            try:
+                self.conversation_coordinator.on_event(payload)
+            except Exception as e:
+                logger.error(f"Error in ConversationCoordinator event dispatch: {e}")
+
         with self._callback_lock:
             callbacks = list(self._event_callbacks.get(event_type, []))
             
@@ -130,7 +178,7 @@ class PipelineContext:
 
     def register_interrupt_callback(self, callback: Callable[[], None]) -> None:
         """
-        Registers a callback to be triggered immediately when an interruption occurs (e.g. to clear audio player buffer).
+        Registers a callback to be triggered immediately when an interruption occurs.
         """
         with self._interrupt_lock:
             self._interrupt_callbacks.append(callback)
@@ -160,4 +208,3 @@ class PipelineContext:
         """
         with self._active_req_lock:
             return self.active_request_id
-

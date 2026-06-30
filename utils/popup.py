@@ -37,18 +37,16 @@ class StatusMapper:
 
     @staticmethod
     def map_state(state: PipelineState) -> PopupStatus:
-        if state == PipelineState.LISTENING:
+        if state == PipelineState.IDLE:
             return PopupStatus.LISTENING
-        elif state == PipelineState.USER_SPEAKING:
+        elif state == PipelineState.LISTENING:
             return PopupStatus.USER_SPEAKING
-        elif state == PipelineState.TRANSCRIBING:
+        elif state == PipelineState.PROCESSING:
             return PopupStatus.TRANSCRIBING
-        elif state in (PipelineState.THINKING, PipelineState.GENERATING):
+        elif state == PipelineState.THINKING:
             return PopupStatus.THINKING
         elif state == PipelineState.SPEAKING:
             return PopupStatus.SPEAKING
-        elif state == PipelineState.PROCESSING:
-            return PopupStatus.TRANSCRIBING
         else:
             return PopupStatus.HIDDEN
 
@@ -302,8 +300,8 @@ class StatusPopup:
             self.speak_btn.pack_forget()
             self.accent_bar.config(bg=YELLOW)
             self.dot_label.config(fg=YELLOW)
-            self.status_label.config(text="Processing...", fg=YELLOW)
-            self.hint_label.config(text="Converting your speech to text...")
+            self.status_label.config(text="Understanding...", fg=YELLOW)
+            self.hint_label.config(text="Friday is processing your speech...")
             self.crawl_offset = 0
             self._animate_crawler(YELLOW)
 
@@ -317,16 +315,23 @@ class StatusPopup:
             self.crawl_offset = 0
             self._animate_crawler(YELLOW)
 
-        # ── FRIDAY IS SPEAKING — no button, but barge-in works via VAD ───────
+        # ── FRIDAY IS SPEAKING — show button to trigger interruption ─────────
         elif status == PopupStatus.SPEAKING:
-            self.speak_btn.pack_forget()
             self.accent_bar.config(bg=PURPLE)
             self.dot_label.config(fg=PURPLE)
             self.status_label.config(text="Friday is Speaking", fg=PURPLE)
-            self.hint_label.config(text="Speak anytime to interrupt me.")
+            self.hint_label.config(text="Click below to interrupt and speak.")
             self.pulse_width = 3.0
             self.pulse_dir = 0.5
             self._animate_pulse()
+            # Show the button to support manual button-based interruption
+            self.speak_btn.config(
+                text="🎤  Speak Now",
+                bg=PURPLE,
+                fg="#0f1117",
+                state="normal"
+            )
+            self.speak_btn.pack(fill=tk.X, pady=(5, 0))
 
     def _on_speak_clicked(self) -> None:
         """Called when the user clicks the Speak Now button."""

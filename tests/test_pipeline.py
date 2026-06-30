@@ -27,6 +27,8 @@ def test_pipeline_initialization_and_states():
     pipeline = VoicePipeline(context)
 
     # 2. Verify setup state
+    assert pipeline.get_state() == PipelineState.INITIALIZING
+    context.set_state(PipelineState.IDLE)
     assert pipeline.get_state() == PipelineState.IDLE
 
     # 3. Toggle states and verify behavior
@@ -67,4 +69,4 @@ def test_pipeline_manager_orchestration():
     assert len(manager.workers) == 8
 
     # Verify coordinator state transitions through context are correct
-    assert manager.pipeline.get_state() == PipelineState.IDLE
+    assert manager.pipeline.get_state() == PipelineState.READY

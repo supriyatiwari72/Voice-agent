@@ -30,6 +30,7 @@ class AudioPlayer:
         self._thread: Optional[threading.Thread] = None
         self._stream = None
         self._lock = threading.Lock()
+        self._skip_playback = False
 
         audio_cfg = config.get("audio", {})
         # Kokoro synthesizes at 24 kHz; allow override for other providers
@@ -98,9 +99,16 @@ class AudioPlayer:
         logger.info("AudioPlayer stopped.")
 
     def interrupt(self) -> None:
-        """Clear the output buffer immediately (barge-in)."""
+        """Clear the output buffer and abort the audio stream immediately (barge-in)."""
+        self._skip_playback = True
         self.output_buffer.clear()
-        logger.debug("AudioPlayer: output buffer cleared (interrupt).")
+        with self._lock:
+            if self._stream is not None:
+                try:
+                    self._stream.abort()
+                except Exception as e:
+                    logger.warning(f"AudioPlayer: abort error: {e}")
+        logger.debug("AudioPlayer: output buffer cleared and stream aborted (interrupt).")
 
     def is_active(self) -> bool:
         return self._active
@@ -130,9 +138,6 @@ class AudioPlayer:
         """Convert int16 PCM bytes to float32 and write to OutputStream."""
         if not pcm_bytes:
             return
-        with self._lock:
-            if self._stream is None:
-                return
 
         # Auto gain normalization — boost quiet audio to a comfortable level
         samples_int16 = np.frombuffer(pcm_bytes, dtype=np.int16).astype(np.float32)
@@ -144,13 +149,35 @@ class AudioPlayer:
 
         samples = samples_int16 / 32768.0
 
+        # Resample and log speaker reference samples for AEC
+        if hasattr(self, "context") and self.context:
+            try:
+                from scipy import signal
+                if self._sample_rate == 24000:
+                    samples_16k = signal.resample_poly(samples, 2, 3)
+                else:
+                    samples_16k = samples
+                with self.context.speaker_lock:
+                    self.context.speaker_reference.extend(samples_16k)
+            except Exception as e:
+                logger.debug(f"AudioPlayer: error logging speaker reference: {e}")
+
         # Reshape to (frames, channels) expected by sounddevice
         if self._channels > 1:
             samples = samples.reshape(-1, self._channels)
         else:
             samples = samples.reshape(-1, 1)
 
-        try:
-            self._stream.write(samples)
-        except Exception as e:
-            logger.warning(f"AudioPlayer: write error: {e}")
+        with self._lock:
+            if self._stream is None:
+                return
+            if self._skip_playback:
+                self._skip_playback = False
+                logger.debug("AudioPlayer: skipped stale chunk after interrupt.")
+                return
+            if not self._stream.active:
+                self._stream.start()
+            try:
+                self._stream.write(samples)
+            except Exception as e:
+                logger.warning(f"AudioPlayer: write error: {e}")

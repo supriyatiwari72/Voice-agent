@@ -2,15 +2,16 @@ from typing import Dict, Any, Type
 from vad.base import BaseVAD
 from vad.providers.dummy import DummyVAD
 from vad.providers.silero import SileroVAD
+from vad.providers.webrtc import WebRTCVAD
 
 class VADFactory:
     """
     Factory class responsible for validating and resolving BaseVAD instances.
-    Supports DummyVAD and SileroVAD concrete implementations.
+    Supports DummyVAD, SileroVAD, and WebRTCVAD concrete implementations.
     """
     _providers: Dict[str, Type[BaseVAD]] = {
         "silero": SileroVAD,
-        "webrtc": DummyVAD, # Placeholder for future WebRTC integration
+        "webrtc": WebRTCVAD,
         "dummy": DummyVAD
     }
 

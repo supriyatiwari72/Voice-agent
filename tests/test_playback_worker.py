@@ -48,8 +48,8 @@ def test_playback_worker_playback(mock_context_and_queues):
 
     worker.process_loop_step()
     
-    # Assert state shift back to LISTENING
-    assert context.get_state() == PipelineState.LISTENING
+    # Assert state shift back to IDLE
+    assert context.get_state() == PipelineState.IDLE
     
     # Assert output player queue details
     assert player_queue.qsize() == 1
@@ -90,7 +90,8 @@ def test_playback_interruption_during_partial_audio(mock_context_and_queues):
     assert player_queue.qsize() == 1
     assert player_queue.get() == b"\x01"
     
-    # 2. Trigger interruption
+    # 2. Trigger interruption and request cancellation
+    context.cancel_request("req-play-interrupt")
     context.interruption_event.set()
     
     # 3. Try to play subsequent chunk (it should be dropped)

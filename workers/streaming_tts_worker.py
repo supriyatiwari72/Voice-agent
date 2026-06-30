@@ -4,6 +4,7 @@ from typing import Any
 from core.worker_base import BaseWorker
 from core.payloads import SentencePayload, PartialAudioPayload
 from pipeline.pipeline_state import PipelineState
+from core.events import EventType, TTSStartedEvent
 
 logger = logging.getLogger(__name__)
 
@@ -15,23 +16,17 @@ class StreamingTTSWorker(BaseWorker):
     """
 
     def __init__(self, context: Any, input_queue: Any, output_queue: Any, tts: Any):
-        """
-        Initializes the StreamingTTSWorker.
-        """
         super().__init__(name="StreamingTTSWorker", context=context, input_queue=input_queue, output_queue=output_queue)
         self.tts = tts
 
     def process(self, payload: SentencePayload) -> None:
-        """
-        Process a single SentencePayload.
-        """
         if not payload or not isinstance(payload, SentencePayload):
             logger.warning("Received invalid or empty payload in StreamingTTSWorker.")
             return
 
-        # Verify request is active and not interrupted before calling TTS
-        if self.stop_event.is_set() or self.context.interruption_event.is_set() or payload.request_id != self.context.get_active_request_id():
-            logger.info(f"StreamingTTSWorker: request {payload.request_id} is stale/interrupted/stopped. Dropping payload before synthesis.")
+        # Check cancellation before calling TTS
+        if self.stop_event.is_set() or self.context.is_request_cancelled(payload.request_id):
+            logger.info(f"StreamingTTSWorker: request {payload.request_id} is cancelled/stopped. Dropping.")
             return
 
         audio_bytes = b""
@@ -46,17 +41,20 @@ class StreamingTTSWorker(BaseWorker):
                 logger.info(f"TTS Started — synthesizing: '{payload.text[:60]}...'")
                 first_chunk_sent = False
 
-                # Stream synthesis chunks
                 for chunk in synth_method(payload.text):
-                    # Verify request is active / worker not stopped
-                    if self.stop_event.is_set() or self.context.interruption_event.is_set() or payload.request_id != self.context.get_active_request_id():
-                        logger.info(f"StreamingTTSWorker: request {payload.request_id} interrupted/stopped during synthesis. Aborting stream.")
+                    # Check cancellation during generation loop
+                    if self.stop_event.is_set() or self.context.is_request_cancelled(payload.request_id):
+                        logger.info(f"StreamingTTSWorker: request {payload.request_id} cancelled during synthesis.")
                         return
                     
                     if chunk:
                         if not first_chunk_sent:
-                            logger.info("First Audio Chunk ready — entering SPEAKING state")
-                            self.context.set_state(PipelineState.SPEAKING)
+                            logger.info("First Audio Chunk ready — sending TTSStartedEvent")
+                            # Trigger TTSStartedEvent (Coordinator transitions state to PipelineState.SPEAKING)
+                            self.context.trigger_event(
+                                EventType.ERROR_EVENT,
+                                TTSStartedEvent(request_id=payload.request_id, timestamp=time.time())
+                            )
                             first_chunk_sent = True
 
                         audio_payload = PartialAudioPayload(
@@ -68,12 +66,10 @@ class StreamingTTSWorker(BaseWorker):
                         if self.output_queue:
                             self.output_queue.put(audio_payload)
                             
-                # Record metric logs
                 latency_ms = (time.time() - start_time) * 1000
                 self.context.metrics.record_metric("tts_latency_ms", latency_ms)
                 logger.info("TTS Complete")
                 
-                # Send final indicator chunk
                 audio_payload = PartialAudioPayload(
                     request_id=payload.request_id,
                     audio_chunk=b"",
@@ -87,17 +83,19 @@ class StreamingTTSWorker(BaseWorker):
             # Fallback to batch synthesis
             audio_bytes = self.tts.synthesize(payload.text)
             
-            # Verify request is active after synthesis is done
-            if self.stop_event.is_set() or self.context.interruption_event.is_set() or payload.request_id != self.context.get_active_request_id():
-                logger.info(f"StreamingTTSWorker: request {payload.request_id} is stale/interrupted/stopped. Discarding synthesis output.")
+            if self.stop_event.is_set() or self.context.is_request_cancelled(payload.request_id):
+                logger.info(f"StreamingTTSWorker: request {payload.request_id} is stale/interrupted. Discarding synthesis.")
                 return
 
             latency_ms = (time.time() - start_time) * 1000
-
-            # Record metric logs
             self.context.metrics.record_metric("tts_latency_ms", latency_ms)
             logger.info("TTS Complete")
-            self.context.set_state(PipelineState.SPEAKING)
+            
+            # Trigger TTSStartedEvent (Coordinator transitions state to PipelineState.SPEAKING)
+            self.context.trigger_event(
+                EventType.ERROR_EVENT,
+                TTSStartedEvent(request_id=payload.request_id, timestamp=time.time())
+            )
 
         audio_payload = PartialAudioPayload(
             request_id=payload.request_id,
@@ -108,4 +106,3 @@ class StreamingTTSWorker(BaseWorker):
 
         if self.output_queue:
             self.output_queue.put(audio_payload)
-            logger.debug(f"StreamingTTSWorker synthesized audio chunk for sentence: '{payload.text[:20]}...' (is_final={payload.is_final})")

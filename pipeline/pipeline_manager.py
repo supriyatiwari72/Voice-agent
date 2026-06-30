@@ -8,6 +8,7 @@ from audio.recorder import AudioRecorder
 from audio.player import AudioPlayer
 
 from noise.factory import NoiseFactory
+from noise.aec_factory import AECFactory
 from vad.factory import VADFactory
 from stt.factory import STTFactory
 from llm.factory import LLMFactory
@@ -18,6 +19,7 @@ from core.queue_manager import QueueManager
 from core.pipeline_context import PipelineContext
 from core.conversation_recorder import ConversationRecorder
 from pipeline.voice_pipeline import VoicePipeline
+from pipeline.pipeline_state import PipelineState
 from memory.memory_manager import MemoryManager
 
 from workers.noise_worker import NoiseWorker
@@ -79,11 +81,15 @@ class PipelineManager:
         llm = LLMFactory.get_provider(providers.get("llm"), self.config)
         tts = TTSFactory.get_provider(providers.get("tts"), self.config)
         
+        # Resolve AEC config and provider
+        aec_cfg = self.config.get("aec", {})
+        aec_provider_name = aec_cfg.get("provider", "dummy")
+        aec_canceller = AECFactory.get_provider(aec_provider_name, self.config)
+
         # Setup Core Infrastructure components
         self.metrics_tracker = MetricsTracker()
         
         # The input queue is linked directly to recorder's input_buffer._queue.
-        # The intermediate playback_queue remains a separate bounded pipeline queue.
         self.queue_manager = QueueManager(
             config=self.config,
             input_queue=self.input_buffer._queue,
@@ -95,6 +101,20 @@ class PipelineManager:
             queue_manager=self.queue_manager,
             metrics_tracker=self.metrics_tracker
         )
+        
+        # Wire contextual references
+        self.player.context = self.context
+
+        # Set global state to INITIALIZING
+        self.context.set_state(PipelineState.INITIALIZING)
+
+        # Instantiate PlaybackController and ConversationCoordinator
+        from core.playback_controller import PlaybackController
+        self.playback_controller = PlaybackController(self.context, self.player, self.queue_manager)
+        self.context.playback_controller = self.playback_controller
+
+        from core.conversation_coordinator import ConversationCoordinator
+        self.conversation_coordinator = ConversationCoordinator(self.context)
 
         # Initialize conversation recorder (single file per session)
         self.conversation_recorder = ConversationRecorder(
@@ -134,7 +154,8 @@ class PipelineManager:
             context=self.context,
             input_queue=self.queue_manager.audio_queue,
             output_queue=self.queue_manager.speech_queue,
-            noise_canceller=noise_canceller
+            noise_canceller=noise_canceller,
+            aec_canceller=aec_canceller
         )
         
         vad_worker = VADWorker(
@@ -193,8 +214,8 @@ class PipelineManager:
             interruption_worker
         ]
 
-        
         logger.info(f"Pipeline initialized. {len(self.workers)} workers instantiated.")
+        self.context.set_state(PipelineState.READY)
 
     def start(self) -> None:
         """
@@ -224,6 +245,7 @@ class PipelineManager:
             
         self._is_running = False
         logger.info("Stopping pipeline workers...")
+        self.context.set_state(PipelineState.SHUTDOWN)
         
         # Halt recording capture & output playback loops
         self.recorder.stop_recording()

@@ -17,6 +17,10 @@ active_providers:
   llm: "groq"
   tts: "piper_streaming"
 
+# Acoustic Echo Cancellation settings
+aec:
+  provider: "correlation"  # correlation | none
+
 # System prompt injected into each LLM request.
 system_prompt: "You are Friday, a helpful and concise voice assistant. Always respond in English. Respond in 3-4 detailed sentences. Do not use markdown, bullet points, or code blocks. Do not introduce yourself unless directly asked. Do not include any internal thoughts, reasoning, or explanations — output only the direct message to be spoken. You have access to memory about the user — use the [User Profile Facts] and [Recent Turns] sections provided to you to remember and reference facts like the user's name, age, or preferences when relevant."
 
@@ -36,17 +40,17 @@ audio:
 queues:
   audio_queue_size: 200
   speech_queue_size: 100
-  transcript_queue_size: 20
-  response_queue_size: 20
-  tts_queue_size: 20
+  transcript_queue_size: 50
+  response_queue_size: 50
+  tts_queue_size: 50
   playback_queue_size: 50
 
 # Conversation flow
 conversation:
-  barge_in_enabled: true         # Enable barge-in so the user can interrupt Friday
-  followup_enabled: true         # Ask "Anything else?" after each response
+  barge_in_enabled: true         # Enable barge-in so the user can interrupt Friday.
+  followup_enabled: false        # Turn off followup prompts to support natural conversational flow
   goodbye_detection: true        # End conversation on "bye" / "goodbye"
-  max_silence_before_listen_ms: 500  # UI hint delay before showing "Listening..."
+  max_silence_before_listen_ms: 700  # Silence detection timeout in ms (approx 700ms silence complete)
 
 # Logging configuration
 logging:

@@ -55,9 +55,7 @@ def test_streaming_pipeline_end_to_end_metrics(base_config):
         # Verify state is active
         assert manager.context.get_state() in (
             PipelineState.LISTENING,
-            PipelineState.USER_SPEAKING,
             PipelineState.PROCESSING,
-            PipelineState.TRANSCRIBING,
             PipelineState.THINKING,
             PipelineState.SPEAKING,
             PipelineState.IDLE

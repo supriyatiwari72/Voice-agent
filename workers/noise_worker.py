@@ -11,15 +11,17 @@ logger = logging.getLogger(__name__)
 class NoiseWorker(BaseWorker):
     """
     Worker that retrieves raw audio bytes, wraps them in AudioPayload,
-    runs noise cancellation, and forwards the cleaned AudioPayload to the speech_queue.
+    runs echo cancellation, runs noise cancellation, and forwards the cleaned
+    AudioPayload to the speech_queue.
     """
 
-    def __init__(self, context: Any, input_queue: Any, output_queue: Any, noise_canceller: Any):
+    def __init__(self, context: Any, input_queue: Any, output_queue: Any, noise_canceller: Any, aec_canceller: Any = None):
         """
         Initializes the NoiseWorker.
         """
         super().__init__(name="NoiseWorker", context=context, input_queue=input_queue, output_queue=output_queue)
         self.noise_canceller = noise_canceller
+        self.aec_canceller = aec_canceller
 
     def process_loop_step(self) -> None:
         """
@@ -62,7 +64,16 @@ class NoiseWorker(BaseWorker):
             logger.warning("Received invalid or empty payload in NoiseWorker.")
             return
 
-        cleaned_audio = self.noise_canceller.process(payload.audio)
+        audio_data = payload.audio
+
+        # ── Acoustic Echo Cancellation (AEC) ───────────────────────────────
+        if self.aec_canceller and hasattr(self.context, "speaker_reference"):
+            with self.context.speaker_lock:
+                ref_list = list(self.context.speaker_reference)
+            audio_data = self.aec_canceller.process(audio_data, ref_list)
+
+        # ── Noise Suppression (RNNoise) ────────────────────────────────────
+        cleaned_audio = self.noise_canceller.process(audio_data)
         
         # Build cleaned AudioPayload keeping the request_id and created_at timestamps
         cleaned_payload = AudioPayload(
