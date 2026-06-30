@@ -303,3 +303,42 @@ def test_vad_interruption_barge_in_handling():
     barge = context.queue_manager.interruption_queue.get()
     assert barge.request_id == "req-barge"
 
+
+def test_vad_push_to_talk_ignored_accumulation():
+    """Verify that when ptt_active is not set, speech frames are not accumulated and not finalized."""
+    config = {
+        "queues": {"speech_queue_size": 5, "transcript_queue_size": 5},
+        "models_meta": {
+            "vad_providers": {
+                "silero": {
+                    "max_silence_frames": 2,
+                    "min_speech_bytes": 0
+                }
+            }
+        }
+    }
+    context = PipelineContext(config, QueueManager(config), MetricsTracker())
+    context.set_state(PipelineState.IDLE)
+    # Ensure ptt_active is NOT set (simulating no button click)
+    context.ptt_active.clear()
+    
+    mock_vad = MagicMock()
+    worker = VADWorker(context, context.queue_manager.speech_queue, context.queue_manager.transcript_queue, mock_vad)
+
+    # 1. User speaks: VAD detects speech
+    mock_vad.is_speech.return_value = True
+    worker.process(AudioPayload("req-ptt-ignore", b"\x01" * 2000, time.time()))
+
+    # Should NOT start speech segment
+    assert worker._in_speech is False
+    assert len(worker._speech_buffer) == 0
+
+    # 2. Silence frame
+    mock_vad.is_speech.return_value = False
+    worker.process(AudioPayload("req-ptt-ignore", b"\x00" * 2000, time.time()))
+
+    # Should NOT finalize or forward anything to transcript queue
+    assert context.queue_manager.transcript_queue.empty() is True
+    assert worker._in_speech is False
+
+

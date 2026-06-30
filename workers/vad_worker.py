@@ -140,7 +140,17 @@ class VADWorker(BaseWorker):
 
         # Handle speech started (voice onset)
         if eos_res["speech_started"]:
-            # Hands-free VAD: we bypass ptt_active check and start capturing automatically.
+            # ── Push-to-talk gate ─────────────────────────────────────────────
+            # In IDLE state, only start a turn when the user has explicitly
+            # clicked the "Speak Now" button (ptt_active is set).
+            # In SPEAKING state (barge-in), skip the gate — interruption works automatically.
+            is_idle = current_state == PipelineState.IDLE
+            has_ptt = hasattr(self.context, "ptt_active")
+            if is_idle and has_ptt and not self.context.ptt_active.is_set():
+                logger.debug("VADWorker: speech_started ignored — ptt_active not set (no button click).")
+                self.eos_manager.reset()
+                return
+
             self._current_request_id = payload.request_id
             self._in_speech = True
 
@@ -194,38 +204,38 @@ class VADWorker(BaseWorker):
                 self._speech_buffer = b"".join(self._pre_speech_history)
                 self._silence_chunks = []
 
-        # Handle active speech frames
-        if eos_res["is_speech_active"]:
-            if self._use_streaming:
-                chunk_payload = StreamingAudioPayload(
-                    request_id=self._current_request_id,
-                    audio_chunk=payload.audio,
-                    is_final=False,
-                    timestamp=payload.created_at
-                )
-                self.output_queue.put(chunk_payload)
-            else:
-                self._speech_buffer += payload.audio
-                if confidence_score <= self.eos_manager.speech_end_threshold:
-                    self._silence_chunks.append(payload.audio)
+        # Handle active speech frames and speech ended (only if PTT has activated this turn)
+        if self._in_speech:
+            if eos_res["is_speech_active"]:
+                if self._use_streaming:
+                    chunk_payload = StreamingAudioPayload(
+                        request_id=self._current_request_id,
+                        audio_chunk=payload.audio,
+                        is_final=False,
+                        timestamp=payload.created_at
+                    )
+                    self.output_queue.put(chunk_payload)
                 else:
-                    self._silence_chunks = []
+                    self._speech_buffer += payload.audio
+                    if confidence_score <= self.eos_manager.speech_end_threshold:
+                        self._silence_chunks.append(payload.audio)
+                    else:
+                        self._silence_chunks = []
 
-            # Safety duration limit (10s)
-            if len(self._speech_buffer) >= 320000 or (self._use_streaming and self.eos_manager.speech_chunks_count >= 333):
-                logger.warning("Max utterance duration exceeded. Finalizing.")
-                self._finalize_utterance(payload, strip_silence=False)
+                # Safety duration limit (10s)
+                if len(self._speech_buffer) >= 320000 or (self._use_streaming and self.eos_manager.speech_chunks_count >= 333):
+                    logger.warning("Max utterance duration exceeded. Finalizing.")
+                    self._finalize_utterance(payload, strip_silence=False)
+                    return
+
+            if eos_res["speech_ended"]:
+                if self.eos_manager.last_speech_time:
+                    self.context.metrics.record_metric("eos_detection_latency_ms", (time.time() - self.eos_manager.last_speech_time) * 1000)
+                
+                self._finalize_utterance(payload, strip_silence=True)
                 return
 
-        # Handle speech ended (EOS endpoint)
-        if eos_res["speech_ended"]:
-            if self.eos_manager.last_speech_time:
-                self.context.metrics.record_metric("eos_detection_latency_ms", (time.time() - self.eos_manager.last_speech_time) * 1000)
-            
-            self._finalize_utterance(payload, strip_silence=True)
-            return
-
-        # Save pre-speech history when silent
+        # Save pre-speech history when silent/inactive
         if not eos_res["is_speech_active"]:
             self._pre_speech_history.append(payload.audio)
             if len(self._pre_speech_history) > self._pad_frames:
@@ -233,6 +243,7 @@ class VADWorker(BaseWorker):
 
         # Synchronize silence frames counter
         self._silence_frames = self.eos_manager.silence_counter
+
 
     def _finalize_utterance(self, payload: AudioPayload, strip_silence: bool = True) -> None:
         user_done_timestamp = time.time()

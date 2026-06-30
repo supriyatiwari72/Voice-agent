@@ -205,13 +205,23 @@ class STTWorker(BaseWorker):
             return True
         
         hallucinations = {
-            "thank you", "thank you very much", "you're welcome", "you", 
-            "thanks for watching", "subtitles by", "bye", "goodbye"
+            # Common Whisper static/noise hallucinations
+            "thank you", "thank you very much", "thank you so much",
+            "you're welcome", "you", "thanks", "thanks for watching",
+            "subtitles by", "bye", "goodbye", "see you",
+            # Common TTS echo hallucinations (picked up from speaker)
+            "it's good", "it's good it's good", "beyond that",
+            "have to put one on it", "please", "joke",
+            "oh my goodness", "what do you think about this",
+            # Whisper silence hallucinations
+            ".", "..", "...", "okay", "ok", "um", "uh", "hmm",
         }
         
-        if cleaned in hallucinations and duration < 1.8:
+        if cleaned in hallucinations and duration < 2.5:
             return True
         return False
+
+
 
     def _run_batch_from_stream(self, request_id: str, audio: bytes, timestamp: float) -> None:
         self.context.set_state(PipelineState.PROCESSING)

@@ -315,23 +315,25 @@ class StatusPopup:
             self.crawl_offset = 0
             self._animate_crawler(YELLOW)
 
-        # ── FRIDAY IS SPEAKING — show button to trigger interruption ─────────
+        # ── FRIDAY IS SPEAKING — show red Interrupt button ───────────────────
         elif status == PopupStatus.SPEAKING:
             self.accent_bar.config(bg=PURPLE)
             self.dot_label.config(fg=PURPLE)
             self.status_label.config(text="Friday is Speaking", fg=PURPLE)
-            self.hint_label.config(text="Click below to interrupt and speak.")
-            self.pulse_width = 3.0
-            self.pulse_dir = 0.5
-            self._animate_pulse()
-            # Show the button to support manual button-based interruption
+            self.hint_label.config(text="Click below to stop & speak.")
+            # Show a red Stop & Speak button so user can manually interrupt
             self.speak_btn.config(
-                text="🎤  Speak Now",
-                bg=PURPLE,
-                fg="#0f1117",
+                text="🛑  Stop & Speak",
+                bg=RED,
+                fg=TEXT_MAIN,
                 state="normal"
             )
             self.speak_btn.pack(fill=tk.X, pady=(5, 0))
+            self.pulse_width = 3.0
+            self.pulse_dir = 0.5
+            self._animate_pulse()
+
+
 
     def _on_speak_clicked(self) -> None:
         """Called when the user clicks the Speak Now button."""

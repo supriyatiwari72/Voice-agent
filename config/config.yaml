@@ -47,7 +47,7 @@ queues:
 
 # Conversation flow
 conversation:
-  barge_in_enabled: true         # Enable barge-in so the user can interrupt Friday.
+  barge_in_enabled: false        # Disabled: mic picks up speaker echo causing false triggers. Use the Interrupt button in the popup instead.
   followup_enabled: false        # Turn off followup prompts to support natural conversational flow
   goodbye_detection: true        # End conversation on "bye" / "goodbye"
   max_silence_before_listen_ms: 700  # Silence detection timeout in ms (approx 700ms silence complete)

@@ -288,6 +288,7 @@ def main() -> None:
     shutdown_event = manager.context.shutdown_event
 
     def _signal_handler(sig, frame):
+        print("\n\n[Ctrl+C] Shutting down Friday...", flush=True)
         popup.destroy()
         shutdown_event.set()
 
@@ -298,13 +299,31 @@ def main() -> None:
             time.sleep(0.1)
     finally:
         popup.destroy()
-        # Let final audio playback finish before stopping
-        time.sleep(1.5)
-        # Print latency report before shutdown
+        # Print latency report FIRST before any blocking stop() calls
+        print("\n", flush=True)
         manager.metrics_tracker.print_latency_report()
         from utils.log_utils import report_all
         report_all()
-        manager.stop()
+
+        # Stop workers in a background thread with a hard 4-second deadline
+        import threading as _threading
+        import os as _os
+
+        def _do_stop():
+            try:
+                time.sleep(0.5)          # let final audio drain
+                manager.stop()
+            except Exception as e:
+                logger.error(f"Error during pipeline stop: {e}")
+
+        _stop_thread = _threading.Thread(target=_do_stop, daemon=True)
+        _stop_thread.start()
+        _stop_thread.join(timeout=4.0)   # wait max 4 seconds
+
+        # Force exit regardless — sounddevice C-threads can block join() on Windows
+        _os._exit(0)
+
+
 
 
 if __name__ == "__main__":
