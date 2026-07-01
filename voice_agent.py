@@ -237,8 +237,6 @@ def main() -> None:
     # Wire PTT callback: clicking Speak Now sets ptt_active on the context
     def _ptt_callback():
         current_state = manager.context.get_state()
-        manager.context.ptt_active.set()
-        logger.info(f"PTT activated: user clicked Speak Now button in state {current_state.name}.")
 
         # If Friday is speaking, trigger manual interruption immediately
         if current_state == PipelineState.SPEAKING:
@@ -253,6 +251,9 @@ def main() -> None:
             manager.interruption_manager.handle_interruption(active_req_id, is_manual=True)
             # Clear ptt_active so that the pipeline enters IDLE state without auto-listening
             manager.context.ptt_active.clear()
+        else:
+            manager.context.ptt_active.set()
+            logger.info(f"PTT activated: user clicked Speak Now button in state {current_state.name}.")
 
     popup.ptt_callback = _ptt_callback
 
