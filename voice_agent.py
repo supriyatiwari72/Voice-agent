@@ -19,11 +19,15 @@ Press Ctrl+C to quit.
 """
 import argparse
 import logging
+import os
 import signal
 import sys
 import time
 import threading
 from typing import Optional
+
+# Suppress benign Hugging Face Hub warnings on Windows
+os.environ["HF_HUB_DISABLE_SYMLINKS_WARNING"] = "1"
 
 from dotenv import load_dotenv
 load_dotenv()
@@ -205,7 +209,7 @@ def main() -> None:
     setup_logger(config)
 
     # Suppress verbose library logging during demo
-    for noisy in ["faster_whisper", "ctranslate2", "torch", "urllib3", "httpx"]:
+    for noisy in ["faster_whisper", "ctranslate2", "torch", "urllib3", "httpx", "huggingface_hub"]:
         logging.getLogger(noisy).setLevel(logging.WARNING)
 
     # ── Validate Config ────────────────────────────────────────────────────
@@ -246,7 +250,9 @@ def main() -> None:
             # Handle full interruption lifecycle (state transitions, queue flushes, events)
             import uuid
             active_req_id = manager.context.get_active_request_id() or f"manual-interrupt-{uuid.uuid4()}"
-            manager.interruption_manager.handle_interruption(active_req_id)
+            manager.interruption_manager.handle_interruption(active_req_id, is_manual=True)
+            # Clear ptt_active so that the pipeline enters IDLE state without auto-listening
+            manager.context.ptt_active.clear()
 
     popup.ptt_callback = _ptt_callback
 

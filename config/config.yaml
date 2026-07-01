@@ -13,7 +13,7 @@
 active_providers:
   noise: "rnnoise"
   vad: "silero"
-  stt: "distil_whisper"
+  stt: "groq"
   llm: "groq"
   tts: "piper_streaming"
 

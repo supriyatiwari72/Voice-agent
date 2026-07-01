@@ -7,6 +7,7 @@ from stt.providers.deepgram_streaming import DeepgramStreamingSTT
 from stt.providers.assemblyai_streaming import AssemblyAIStreamingSTT
 from stt.providers.parakeet_streaming import ParakeetStreamingSTT
 from stt.providers.moonshine import MoonshineSTT
+from stt.providers.groq import GroqSTT
 
 class STTFactory:
     """
@@ -17,6 +18,7 @@ class STTFactory:
         "faster_whisper": FasterWhisperSTT,
         "distil_whisper": DistilWhisperSTT,
         "moonshine": MoonshineSTT,
+        "groq": GroqSTT,
         "deepgram": DummySTT,
         "deepgram_streaming": DeepgramStreamingSTT,
         "assemblyai_streaming": AssemblyAIStreamingSTT,

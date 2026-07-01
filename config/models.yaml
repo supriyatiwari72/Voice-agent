@@ -52,7 +52,7 @@ stt_providers:
     beam_size: 5
 
   distil_whisper:
-    model_size: "distil-small.en"
+    model_size: "distil-medium.en"
     device: "cpu"
     compute_type: "int8"
     beam_size: 5
@@ -66,6 +66,11 @@ stt_providers:
   deepgram_streaming:
     api_key: null
     model: "nova-2"
+    language: "en"
+
+  groq:
+    api_key: null               # Set GROQ_API_KEY in .env or here
+    model: "whisper-large-v3"
     language: "en"
 
   assemblyai_streaming:

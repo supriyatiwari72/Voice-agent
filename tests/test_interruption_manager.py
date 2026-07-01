@@ -129,3 +129,16 @@ def test_workers_abort_on_interruption_event(mock_context_and_queues):
     playback_worker.process_loop_step()
     
     assert playback_out.empty() is True
+
+def test_interruption_manager_manual_interruption(mock_context_and_queues):
+    """
+    Verify InterruptionManager sets state to IDLE when is_manual=True.
+    """
+    context, qm = mock_context_and_queues
+    im = InterruptionManager(context)
+    context.interruption_manager = im
+
+    context.set_state(PipelineState.SPEAKING)
+    im.handle_interruption("req-1", is_manual=True)
+
+    assert context.get_state() == PipelineState.IDLE

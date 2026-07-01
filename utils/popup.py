@@ -82,6 +82,7 @@ class StatusPopup:
         self.current_status: str = PopupStatus.HIDDEN
         self.last_update_time: float = 0.0
         self.pending_after_id: Optional[str] = None
+        self.was_interrupted: bool = False
 
         # Animation
         self.crawl_offset = 0
@@ -258,10 +259,18 @@ class StatusPopup:
         self.last_update_time = time.time() * 1000.0
         self.pending_after_id = None
 
+        if state == PipelineState.INTERRUPTED:
+            self.was_interrupted = True
+
         status = StatusMapper.map_state(state)
         self.current_status = status
 
+        if status != PopupStatus.LISTENING and state != PipelineState.INTERRUPTED:
+            self.was_interrupted = False
+
         if status == PopupStatus.HIDDEN:
+            if state == PipelineState.INTERRUPTED:
+                return
             self.root.withdraw()
             return
 
@@ -272,7 +281,10 @@ class StatusPopup:
         if status == PopupStatus.LISTENING:
             self.accent_bar.config(bg=GREEN)
             self.dot_label.config(fg=GREEN)
-            self.status_label.config(text="Speak Now", fg=GREEN)
+            if self.was_interrupted:
+                self.status_label.config(text="Ask another question", fg=GREEN)
+            else:
+                self.status_label.config(text="Speak Now", fg=GREEN)
             self.hint_label.config(text="Click the button below to speak")
             self.canvas.delete("bar")
             self.canvas.create_rectangle(0, 0, 300, 4, fill=GREEN, outline="", tags="bar")
@@ -323,7 +335,7 @@ class StatusPopup:
             self.hint_label.config(text="Click below to stop & speak.")
             # Show a red Stop & Speak button so user can manually interrupt
             self.speak_btn.config(
-                text="🛑  Stop & Speak",
+                text="🛑  Stop & Speak Again",
                 bg=RED,
                 fg=TEXT_MAIN,
                 state="normal"
@@ -337,14 +349,16 @@ class StatusPopup:
 
     def _on_speak_clicked(self) -> None:
         """Called when the user clicks the Speak Now button."""
+        self.was_interrupted = False
         # Update button to show recording is active
         if self.speak_btn and self.root:
-            self.speak_btn.config(
-                text="🔴  Listening...",
-                bg=RED,
-                fg=TEXT_MAIN,
-                state="disabled"
-            )
+            if self.current_status != PopupStatus.SPEAKING:
+                self.speak_btn.config(
+                    text="🔴  Listening...",
+                    bg=RED,
+                    fg=TEXT_MAIN,
+                    state="disabled"
+                )
         # Fire PTT callback (sets ptt_active event on the pipeline context)
         if self.ptt_callback:
             threading.Thread(target=self.ptt_callback, daemon=True).start()

@@ -12,6 +12,9 @@ def test_stt_factory_valid_provider():
     provider_dg = STTFactory.get_provider("deepgram")
     assert isinstance(provider_dg, BaseSTT)
 
+    provider_groq = STTFactory.get_provider("groq")
+    assert isinstance(provider_groq, BaseSTT)
+
 def test_stt_factory_invalid_provider():
     """
     Test that STTFactory raises a ValueError for unregistered/unsupported providers.

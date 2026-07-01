@@ -17,11 +17,11 @@ class InterruptionManager:
         """
         self.context = context
 
-    def handle_interruption(self, request_id: str) -> None:
+    def handle_interruption(self, request_id: str, is_manual: bool = False) -> None:
         """
         Processes an interruption event, halts audio playback, flushes downstream
         assistant queues (while leaving STT queues intact to preserve the interruption speech),
-        sets the pipeline state back to LISTENING, and triggers event hooks.
+        sets the pipeline state back to LISTENING (or IDLE if manual), and triggers event hooks.
         """
         logger.info(f"Handling interruption for request: {request_id}")
 
@@ -50,10 +50,13 @@ class InterruptionManager:
         # 5. Clear the interruption_event flag
         self.context.interruption_event.clear()
 
-        # 6. Set state to LISTENING so the new turn captures speech immediately
-        self.context.set_state(PipelineState.LISTENING)
+        # 6. Set state to LISTENING (or IDLE if manual) so the new turn captures speech immediately
+        if is_manual:
+            self.context.set_state(PipelineState.IDLE)
+        else:
+            self.context.set_state(PipelineState.LISTENING)
 
         # 7. Trigger INTERRUPTION_FINISHED
         self.context.trigger_event(EventType.INTERRUPTION_FINISHED, request_id)
 
-        logger.info(f"Interruption handling completed for request {request_id}. Pipeline state is now LISTENING.")
+        logger.info(f"Interruption handling completed for request {request_id}. Pipeline state is now {self.context.get_state().name}.")
