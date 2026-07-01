@@ -111,7 +111,7 @@ class StatusPopup:
     def _setup_ui(self) -> None:
         assert self.root is not None
 
-        W, H = 300, 140
+        W, H = 300, 160
 
         self.root.overrideredirect(True)
         self.root.attributes("-topmost", True)
@@ -272,10 +272,21 @@ class StatusPopup:
             if state == PipelineState.INTERRUPTED:
                 return
             self.root.withdraw()
+            try:
+                self.root.update_idletasks()
+                self.root.update()
+            except Exception:
+                pass
             return
 
         self.root.deiconify()
+        self.root.lift()
         self.root.attributes("-topmost", True)
+        try:
+            self.root.update_idletasks()
+            self.root.update()
+        except Exception:
+            pass
 
         # ── SPEAK NOW (LISTENING) — show the clickable button ─────────────────
         if status == PopupStatus.LISTENING:
@@ -344,6 +355,12 @@ class StatusPopup:
             self.pulse_width = 3.0
             self.pulse_dir = 0.5
             self._animate_pulse()
+
+        try:
+            self.root.update_idletasks()
+            self.root.update()
+        except Exception:
+            pass
 
 
 
