@@ -252,6 +252,9 @@ def main() -> None:
             # Clear ptt_active so that the pipeline enters IDLE state without auto-listening
             manager.context.ptt_active.clear()
         else:
+            # Clear any stale coordination flags from previous turns
+            manager.context.interruption_event.clear()
+            manager.context.barge_in_occurred.clear()
             manager.context.ptt_active.set()
             logger.info(f"PTT activated: user clicked Speak Now button in state {current_state.name}.")
 
@@ -296,7 +299,6 @@ def main() -> None:
 
     def _signal_handler(sig, frame):
         print("\n\n[Ctrl+C] Shutting down Friday...", flush=True)
-        popup.destroy()
         shutdown_event.set()
 
     signal.signal(signal.SIGINT, _signal_handler)
@@ -305,19 +307,19 @@ def main() -> None:
         while not shutdown_event.is_set():
             time.sleep(0.1)
     finally:
-        popup.destroy()
-        # Print latency report FIRST before any blocking stop() calls
+        # Print latency report FIRST — nothing blocking before this
         print("\n", flush=True)
         manager.metrics_tracker.print_latency_report()
         from utils.log_utils import report_all
         report_all()
 
-        # Stop workers in a background thread with a hard 4-second deadline
+        # Stop workers and destroy popup in a background thread with a hard 4-second deadline
         import threading as _threading
         import os as _os
 
         def _do_stop():
             try:
+                popup.destroy()
                 time.sleep(0.5)          # let final audio drain
                 manager.stop()
             except Exception as e:

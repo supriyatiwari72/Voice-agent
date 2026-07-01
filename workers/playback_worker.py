@@ -101,6 +101,10 @@ class PlaybackWorker(BaseWorker):
             if self.context.get_state() not in (PipelineState.IDLE, PipelineState.LISTENING, PipelineState.SHUTDOWN):
                 self.context.set_state(PipelineState.IDLE)
 
+            # Clear stale coordination events so the next turn starts cleanly
+            self.context.interruption_event.clear()
+            self.context.barge_in_occurred.clear()
+
             # If follow-up prompt is explicitly enabled in config
             followup_enabled = self.context.config.get("conversation", {}).get("followup_enabled", True)
             if (not is_testing

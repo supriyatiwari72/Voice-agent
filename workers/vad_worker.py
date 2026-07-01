@@ -300,3 +300,8 @@ class VADWorker(BaseWorker):
         self.eos_manager.reset()
         if hasattr(self.context, "ptt_active"):
             self.context.ptt_active.clear()
+        # Clear stale coordination flags to prevent leaking into the next turn
+        if hasattr(self.context, "interruption_event"):
+            self.context.interruption_event.clear()
+        if hasattr(self.context, "barge_in_occurred"):
+            self.context.barge_in_occurred.clear()
