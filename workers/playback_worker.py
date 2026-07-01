@@ -62,6 +62,18 @@ class PlaybackWorker(BaseWorker):
 
         # On final chunk: record turnaround, log, reset state to IDLE
         if payload.is_final:
+            # Wait for physical playback to complete (buffer to drain)
+            if self.context and self.context.playback_controller and self.context.playback_controller.player:
+                player = self.context.playback_controller.player
+                if player.is_active():
+                    while player.output_buffer.size() > 0:
+                        if self.context.is_request_cancelled(payload.request_id):
+                            break
+                        time.sleep(0.02)
+                    # Small extra grace period to let the final chunk play out of speakers
+                    if not self.context.is_request_cancelled(payload.request_id):
+                        time.sleep(0.15)
+
             turnaround_ms = (time.time() - payload.timestamp) * 1000
             self.context.metrics.record_metric("total_turnaround_ms", turnaround_ms)
             logger.info(f"Playback Complete — total turnaround: {turnaround_ms:.0f} ms")
