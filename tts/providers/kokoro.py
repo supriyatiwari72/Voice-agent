@@ -35,7 +35,8 @@ class KokoroTTS(BaseTTS):
         
         # Load parameters from models_meta configurations
         models_meta = self.config.get("models_meta", {})
-        tts_config = models_meta.get("tts_providers", {}).get("kokoro", {}) or self.config
+        provider_name = self.config.get("_tts_provider_name", "kokoro")
+        tts_config = models_meta.get("tts_providers", {}).get(provider_name, {}) or self.config
 
         self.model_path = tts_config.get("model_path", "weights/kokoro-v0_19.onnx")
         self.voices_path = tts_config.get("voices_path", "weights/voices.bin")

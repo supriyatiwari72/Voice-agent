@@ -49,4 +49,6 @@ class TTSFactory:
             )
 
         provider_cls = cls._providers[clean_name]
-        return provider_cls(config or {})
+        resolved_config = dict(config) if config else {}
+        resolved_config["_tts_provider_name"] = clean_name
+        return provider_cls(resolved_config)

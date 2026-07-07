@@ -15,7 +15,7 @@ active_providers:
   vad: "silero"
   stt: "groq"
   llm: "groq"
-  tts: "piper_streaming"
+  tts: "kokoro_streaming"
 
 # Acoustic Echo Cancellation settings
 aec:
