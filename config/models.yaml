@@ -154,12 +154,12 @@ tts_providers:
   kokoro:
     model_path: "weights/kokoro-v0_19.onnx"
     voices_path: "weights/voices.bin"
-    voice: "am_michael"
+    voice: "af_bella"
 
   kokoro_streaming:
     model_path: "weights/kokoro-v0_19.onnx"
     voices_path: "weights/voices.bin"
-    voice: "am_michael"
+    voice: "am_luna"
 
   piper:
     model_path: "weights/en_US-lessac-medium.onnx"
