@@ -155,11 +155,13 @@ tts_providers:
     model_path: "weights/kokoro-v0_19.onnx"
     voices_path: "weights/voices.bin"
     voice: "af_bella"
+    pace: "fast"
 
   kokoro_streaming:
     model_path: "weights/kokoro-v0_19.onnx"
     voices_path: "weights/voices.bin"
-    voice: "am_luna"
+    voice: "jf_beta"
+    pace: "slow"
 
   piper:
     model_path: "weights/en_US-lessac-medium.onnx"
