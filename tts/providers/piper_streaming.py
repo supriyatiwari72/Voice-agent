@@ -15,8 +15,16 @@ class PiperStreamingTTS(BaseTTS):
     def __init__(self, config: Dict[str, Any]):
         self.config = config or {}
         
+        # Resolve provider name dynamically (mirrors Kokoro pattern)
         models_meta = self.config.get("models_meta", {})
-        tts_config = models_meta.get("tts_providers", {}).get("piper", {}) or self.config.get("tts", {}).get("piper", {}) or {}
+        provider_name = self.config.get("_tts_provider_name", "piper_streaming")
+        tts_providers = models_meta.get("tts_providers", {})
+        tts_config = (
+            tts_providers.get(provider_name, {})
+            or tts_providers.get("piper", {})
+            or self.config.get("tts", {}).get("piper", {})
+            or {}
+        )
         
         self.model_path = os.path.abspath(tts_config.get("model_path") or "weights/en_US-lessac-medium.onnx")
         self.config_path = os.path.abspath(tts_config.get("config_path") or "weights/en_US-lessac-medium.onnx.json")

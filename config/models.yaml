@@ -171,6 +171,26 @@ tts_providers:
     model_path: "weights/en_US-lessac-medium.onnx"
     config_path: "weights/en_US-lessac-medium.onnx.json"
 
+  piper_en:
+    model_path: "weights/en_US-lessac-medium.onnx"
+    config_path: "weights/en_US-lessac-medium.onnx.json"
+
+  piper_hi_female:
+    model_path: "weights/hi_IN-priyamvada-medium.onnx"
+    config_path: "weights/hi_IN-priyamvada-medium.onnx.json"
+
+  piper_hi_male:
+    model_path: "weights/hi_IN-pratham-medium.onnx"
+    config_path: "weights/hi_IN-pratham-medium.onnx.json"
+
+  piper_fr:
+    model_path: "weights/fr_FR-gilles-low.onnx"
+    config_path: "weights/fr_FR-gilles-low.onnx.json"
+
+  piper_de:
+    model_path: "weights/de_DE-mls-medium.onnx"
+    config_path: "weights/de_DE-mls-medium.onnx.json"
+
   deepgram:
     api_key: null
     model: "aura-asteria-en"
