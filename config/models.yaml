@@ -46,10 +46,45 @@ stt_providers:
     language: "en"
 
   faster_whisper:
-    model_size: "tiny"          # tiny | base | small | medium | large-v2
+    model_size: "small"          # tiny | base | small | medium | large-v2
     device: "cpu"
     compute_type: "int8"
     beam_size: 5
+
+  faster_whisper_auto:
+    model_size: "small"
+    device: "cpu"
+    compute_type: "int8"
+    beam_size: 5
+    language: null               # auto detect
+
+  faster_whisper_en:
+    model_size: "small"
+    device: "cpu"
+    compute_type: "int8"
+    beam_size: 5
+    language: "en"
+
+  faster_whisper_hi:
+    model_size: "small"
+    device: "cpu"
+    compute_type: "int8"
+    beam_size: 5
+    language: "hi"
+
+  faster_whisper_fr:
+    model_size: "small"
+    device: "cpu"
+    compute_type: "int8"
+    beam_size: 5
+    language: "fr"
+
+  faster_whisper_de:
+    model_size: "small"
+    device: "cpu"
+    compute_type: "int8"
+    beam_size: 5
+    language: "de"
 
   distil_whisper:
     model_size: "distil-medium.en"
@@ -160,7 +195,7 @@ tts_providers:
   kokoro_streaming:
     model_path: "weights/kokoro-v0_19.onnx"
     voices_path: "weights/voices.bin"
-    voice: "zf_elena"
+    voice: "bm_lewis"
     pace: "slow"
 
   piper:

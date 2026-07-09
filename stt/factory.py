@@ -16,6 +16,11 @@ class STTFactory:
     _providers: Dict[str, Type[BaseSTT]] = {
         "whisper": DummySTT,
         "faster_whisper": FasterWhisperSTT,
+        "faster_whisper_auto": FasterWhisperSTT,
+        "faster_whisper_en": FasterWhisperSTT,
+        "faster_whisper_hi": FasterWhisperSTT,
+        "faster_whisper_fr": FasterWhisperSTT,
+        "faster_whisper_de": FasterWhisperSTT,
         "distil_whisper": DistilWhisperSTT,
         "moonshine": MoonshineSTT,
         "groq": GroqSTT,
@@ -54,4 +59,6 @@ class STTFactory:
             )
 
         provider_cls = cls._providers[clean_name]
-        return provider_cls(config or {})
+        resolved_config = dict(config) if config else {}
+        resolved_config["_stt_provider_name"] = clean_name
+        return provider_cls(resolved_config)

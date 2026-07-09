@@ -19,14 +19,21 @@ class FasterWhisperSTT(BaseSTT):
         """
         self.config = config or {}
         
-        # Load parameters from models_meta configurations
+        # Resolve provider name dynamically (mirrors Kokoro/Piper pattern)
         models_meta = self.config.get("models_meta", {})
-        stt_config = models_meta.get("stt_providers", {}).get("faster_whisper", {}) or self.config
+        provider_name = self.config.get("_stt_provider_name", "faster_whisper")
+        stt_providers = models_meta.get("stt_providers", {})
+        stt_config = (
+            stt_providers.get(provider_name, {})
+            or stt_providers.get("faster_whisper", {})
+            or self.config
+        )
 
         self.model_size = stt_config.get("model_size", "tiny")
         self.device = stt_config.get("device", "cpu")
         self.compute_type = stt_config.get("compute_type", "int8")
         self.beam_size = stt_config.get("beam_size", 5)
+        self.language = stt_config.get("language")
 
         logger.info(
             f"Loading Faster Whisper model: size={self.model_size}, "
@@ -49,7 +56,10 @@ class FasterWhisperSTT(BaseSTT):
         """
         try:
             warm_up_audio = np.zeros(16000, dtype=np.float32)
-            segments, _ = self.model.transcribe(warm_up_audio, beam_size=self.beam_size, language="en")
+            transcribe_kwargs = {"beam_size": self.beam_size}
+            if self.language:
+                transcribe_kwargs["language"] = self.language
+            segments, info = self.model.transcribe(warm_up_audio, **transcribe_kwargs)
             list(segments)
             logger.info("Faster Whisper model warm-up completed.")
         except Exception as e:
@@ -75,9 +85,14 @@ class FasterWhisperSTT(BaseSTT):
             if len(audio_np) == 0:
                 return ""
 
-            # Call transcription — force English to avoid auto-detecting other languages
-            segments, _ = self.model.transcribe(audio_np, beam_size=self.beam_size, language="en")
+            # Call transcription — language is fixed if configured, otherwise auto-detected
+            transcribe_kwargs = {"beam_size": self.beam_size}
+            if self.language:
+                transcribe_kwargs["language"] = self.language
+            segments, info = self.model.transcribe(audio_np, **transcribe_kwargs)
             
+            print(f"Detected language: {info.language}")
+
             # Exhaust segments generator to accumulate the final transcript string
             segment_texts = [segment.text for segment in segments]
             transcript = " ".join(segment_texts).strip()

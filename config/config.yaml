@@ -6,24 +6,25 @@
 #
 #   noise:      rnnoise | deepfilternet
 #   vad:        silero | webrtc
-#   stt:        moonshine | faster_whisper | distil_whisper
-#   llm:        groq | openrouter 
-#   tts:        piper_streaming | kokoro_streaming
+#   stt:        moonshine | faster_whisper | distil_whisper | groq
+#   llm:        groq | openrouter | ollama
+#   tts:        kokoro | kokoro_streaming | piper | piper_streaming |
+#               piper_en | piper_hi_female | piper_hi_male |
+#               piper_fr | piper_de
 
 active_providers:
   noise: "rnnoise"
   vad: "silero"
-  stt: "groq"
+  stt: "faster_whisper_hi"
   llm: "groq"
-  tts: "kokoro_streaming"
+  tts: "piper_hi_female"
 
 # Acoustic Echo Cancellation settings
 aec:
   provider: "correlation"  # correlation | none
 
 # System prompt injected into each LLM request.
-system_prompt: "You are Friday, a helpful and concise voice assistant. Always respond in English. Respond in 3-4 detailed sentences. Do not use markdown, bullet points, or code blocks. Do not introduce yourself unless directly asked. Do not include any internal thoughts, reasoning, or explanations — output only the direct message to be spoken. You have access to memory about the user — use the [User Profile Facts] and [Recent Turns] sections provided to you to remember and reference facts like the user's name, age, or preferences when relevant."
-
+system_prompt: "You are Friday, a helpful and concise voice assistant. Always respond in the same language as the user's latest message. If the user speaks Hindi, respond in Hindi. If the user speaks French, respond in French. If the user speaks German, respond in German. If the user speaks English, respond in English. Respond in 3-4 detailed sentences. Do not use markdown, bullet points, or code blocks. Do not introduce yourself unless directly asked. Do not include any internal thoughts, reasoning, or explanations—output only the direct message to be spoken. You have access to memory about the user and may use it when relevant."
 # Audio interface configuration
 audio:
   input_device_index: null        # null = system default microphone
