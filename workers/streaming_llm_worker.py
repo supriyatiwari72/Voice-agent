@@ -89,9 +89,57 @@ class StreamingLLMWorker(BaseWorker):
         has_memory = hasattr(self.context, "memory_manager") and self.context.memory_manager
         if has_memory:
             self.context.memory_manager.add_user_message(full_text)
-            prompt = self.context.memory_manager.get_context(full_text)
+
+        # ── Knowledge Retrieval ──────────────────────────────────────────
+        knowledge_context = ""
+        has_knowledge = (
+            hasattr(self.context, "knowledge_retriever")
+            and self.context.knowledge_retriever is not None
+        )
+        if has_knowledge:
+            try:
+                entries = self.context.knowledge_retriever.retrieve(full_text)
+                if entries:
+                    app_name = self.context.config.get("application", {}).get("active", "")
+
+                    parts = [
+                        "========== OFFICIAL APPLICATION DOCUMENTATION ==========",
+                        f"Application: {app_name}",
+                        "",
+                        "The information below comes from the official documentation.",
+                        "Use ONLY this information when answering.",
+                        "If the answer is not present, say:",
+                        "\"I couldn't find that information in the Zippy documentation.\"",
+                        ""
+                    ]
+
+                    for entry in entries:
+                        parts.append(f"Title: {entry.get('title','')}")
+                        parts.append(f"Question: {entry.get('question','')}")
+                        parts.append(f"Answer: {entry.get('answer','')}")
+                        parts.append("")
+
+                    knowledge_context = "\n".join(parts)
+
+                    logger.info(
+                        f"Knowledge retrieval returned {len(entries)} entries for request {payload.request_id}"
+                    )
+            except Exception as e:
+                logger.warning(f"Knowledge retrieval failed, continuing without: {e}")
+                knowledge_context = ""
+
+        if has_memory:
+            prompt = self.context.memory_manager.get_context(full_text, knowledge_context)
         else:
-            prompt = full_text
+            # Build a minimal prompt when memory is disabled
+            system_prompt = self.context.config.get("system_prompt", "")
+            prompt_parts = []
+            if system_prompt:
+                prompt_parts.append(f"[System Prompt]\n{system_prompt.strip()}")
+            if knowledge_context:
+                prompt_parts.append(knowledge_context)
+            prompt_parts.append(f"User: {full_text}")
+            prompt = "\n\n".join(prompt_parts)
 
         start_time = time.time()
         first_token = True

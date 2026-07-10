@@ -90,7 +90,7 @@ class MemoryManager:
         # Determine if any summarization trigger is satisfied
         self._maybe_trigger_summarization(pruned_turns)
 
-    def get_context(self, user_query: str) -> str:
+    def get_context(self, user_query: str, knowledge_context: str = "") -> str:
         """
         Assembles and formats the memory-enriched system prompt for the LLM.
         """
@@ -106,7 +106,8 @@ class MemoryManager:
             summary=summary,
             facts=facts,
             recent_turns=recent_turns,
-            user_query=user_query
+            user_query=user_query,
+            knowledge_context=knowledge_context
         )
 
         build_time_ms = (time.time() - start_time) * 1000

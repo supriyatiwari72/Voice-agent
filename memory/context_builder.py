@@ -11,10 +11,12 @@ class ContextBuilder:
         summary: str,
         facts: Dict[str, Any],
         recent_turns: List[Turn],
-        user_query: str
+        user_query: str,
+        knowledge_context: str = ""
     ) -> str:
         """
-        Builds a comprehensive prompt containing system prompt, summary, facts, recent turns, and current query.
+        Builds a comprehensive prompt containing system prompt, summary, facts,
+        recent turns, retrieved knowledge, and current query.
         """
         parts = []
         
@@ -39,6 +41,10 @@ class ContextBuilder:
                 turns_text.append(f"User: {turn.user_message}")
                 turns_text.append(f"Assistant: {turn.assistant_message}")
             parts.append("[Recent Turns]\n" + "\n".join(turns_text))
+
+        # Retrieved knowledge section
+        if knowledge_context:
+            parts.append(knowledge_context)
             
         # Current user query
         parts.append(f"User: {user_query.strip()}")

@@ -35,6 +35,13 @@ class FasterWhisperSTT(BaseSTT):
         self.beam_size = stt_config.get("beam_size", 5)
         self.language = stt_config.get("language")
 
+        print("=" * 60)
+        print(f"Provider Name   : {provider_name}")
+        print(f"Language        : {self.language}")
+        print(f"Model Size      : {self.model_size}")
+        print(f"STT Config      : {stt_config}")
+        print("=" * 60)
+
         logger.info(
             f"Loading Faster Whisper model: size={self.model_size}, "
             f"device={self.device}, compute_type={self.compute_type}..."

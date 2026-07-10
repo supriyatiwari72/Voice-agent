@@ -56,7 +56,7 @@ def test_streaming_llm_worker_generation(mock_context_and_queues):
     
     # Verify stream is processed
     assert mock_llm.generate_stream.call_count == 1
-    mock_llm.generate_stream.assert_called_with("hello world")
+    mock_llm.generate_stream.assert_called_with("User: hello world")
     
     # Expect: token1, token2, and closing payload (total 3 payloads)
     assert qm.partial_response_queue.qsize() == 3

@@ -1,0 +1,2718 @@
+{
+  "platform": {
+    "id": "zippy",
+    "name": "Zippy",
+    "version": "1.0",
+    "domain": "Solar Permit Design"
+  },
+  "knowledge": [
+    {
+      "id": "gen-001",
+      "category": "General",
+      "title": "Zippy used for",
+      "question": "What is Zippy used for?",
+      "answer": "Zippy is used to create solar permit design plans, including the site plan, roof layout, electrical diagram, equipment placement, and permit-ready PDF output.",
+      "keywords": [
+        "roof",
+        "equipment",
+        "site plan",
+        "zippy"
+      ],
+      "related_topics": [
+        "gen-002",
+        "gen-012",
+        "gen-003"
+      ]
+    },
+    {
+      "id": "gen-002",
+      "category": "General",
+      "title": "PermitEditor",
+      "question": "What is PermitEditor?",
+      "answer": "PermitEditor is the proposal-design module within Zippy. It produces designs that comply with the relevant AHJ (Authority Having Jurisdiction) and utility guidelines for the USA. Its workflow is organised into four core steps — Building Layout, Site Plan, Roof Plan, and String Layout — each of which has its own section in this document.",
+      "keywords": [
+        "ahj",
+        "roof",
+        "module",
+        "string",
+        "site plan",
+        "building layout",
+        "roof plan",
+        "string layout",
+        "zippy",
+        "permiteditor"
+      ],
+      "related_topics": [
+        "gen-012",
+        "gen-001",
+        "gen-007"
+      ]
+    },
+    {
+      "id": "gen-003",
+      "category": "General",
+      "title": "What kind of designs can I create in Zippy",
+      "question": "What kind of designs can I create in Zippy?",
+      "answer": "Zippy currently supports residential rooftop solar designs only. Ground-mount and pole-mount designs cannot be created in the tool.",
+      "keywords": [
+        "roof",
+        "zippy"
+      ],
+      "related_topics": [
+        "gen-001",
+        "gen-002",
+        "gen-007"
+      ]
+    },
+    {
+      "id": "gen-004",
+      "category": "General",
+      "title": "The main steps in the Zippy workflow",
+      "question": "What are the main steps in the Zippy workflow?",
+      "answer": "Enter the home and project information, upload the DXF or survey, create the roof layout, place the modules, add property lines, place the equipment (inverter, meter, disconnect), complete the electrical connections, add structure information, and finally generate the PDF and submit.",
+      "keywords": [
+        "dxf",
+        "nec",
+        "roof",
+        "module",
+        "modules",
+        "inverter",
+        "property line",
+        "structure information",
+        "equipment",
+        "survey"
+      ],
+      "related_topics": [
+        "gen-012",
+        "gen-007",
+        "gen-015"
+      ]
+    },
+    {
+      "id": "gen-005",
+      "category": "General",
+      "title": "Where is the Help bar and what does it do",
+      "question": "Where is the Help bar and what does it do?",
+      "answer": "The Help bar is opened from the toggle in the upper-right corner. It surfaces the mandatory fields and tools for the step you are on, and supports step-to-step navigation across the Zippy workflow.",
+      "keywords": [
+        "zippy",
+        "help bar"
+      ],
+      "related_topics": [
+        "gen-001",
+        "gen-002",
+        "gen-003"
+      ]
+    },
+    {
+      "id": "gen-006",
+      "category": "General",
+      "title": "What files are required to start a design",
+      "question": "What files are required to start a design?",
+      "answer": "A DXF file, survey images, the Google address or location, and details of any existing system.",
+      "keywords": [
+        "dxf",
+        "survey"
+      ],
+      "related_topics": [
+        "gen-004",
+        "gen-012",
+        "gen-007"
+      ]
+    },
+    {
+      "id": "gen-007",
+      "category": "General",
+      "title": "A DXF file",
+      "question": "What is a DXF file?",
+      "answer": "A DXF (Drawing Exchange Format) file is a 2D or 3D vector-based file containing the technical data of a photovoltaic system — including roof layout, module placement, obstructions, and fire setbacks. In Zippy, the DXF is generated in Aurora and uploaded as the starting point of the design.",
+      "keywords": [
+        "dxf",
+        "setback",
+        "setbacks",
+        "roof",
+        "module",
+        "aurora",
+        "fire setback",
+        "obstruction",
+        "obstructions",
+        "zippy"
+      ],
+      "related_topics": [
+        "gen-012",
+        "gen-002",
+        "gen-004"
+      ]
+    },
+    {
+      "id": "gen-008",
+      "category": "General",
+      "title": "A DXF file is not available",
+      "question": "What should I do if a DXF file is not available?",
+      "answer": "Currently, Zippy works only with an Aurora-generated DXF file. Manual drafting is not yet supported in the tool, but this feature is planned for a future release. If no DXF is provided, you need to create one in Aurora first and then upload it to Zippy.",
+      "keywords": [
+        "dxf",
+        "aurora",
+        "zippy"
+      ],
+      "related_topics": [
+        "gen-007",
+        "gen-009",
+        "gen-012"
+      ]
+    },
+    {
+      "id": "gen-009",
+      "category": "General",
+      "title": "Create a design in Zippy without a DXF",
+      "question": "Can I create a design in Zippy without a DXF?",
+      "answer": "No. Manual drawing and Google Maps tracing are not supported. A DXF file is mandatory to proceed with the design.",
+      "keywords": [
+        "dxf",
+        "google maps",
+        "zippy"
+      ],
+      "related_topics": [
+        "gen-007",
+        "gen-008",
+        "gen-012"
+      ]
+    },
+    {
+      "id": "gen-010",
+      "category": "General",
+      "title": "The Save / Submit button disabled",
+      "question": "Why is the Save / Submit button disabled?",
+      "answer": "This usually happens when mandatory fields are missing, the electrical or structure information is incomplete, or required equipment has not been added.",
+      "keywords": [
+        "structure information",
+        "equipment"
+      ],
+      "related_topics": [
+        "gen-004",
+        "gen-001",
+        "gen-012"
+      ]
+    },
+    {
+      "id": "gen-011",
+      "category": "General",
+      "title": "What happens if I click Refresh or Delete",
+      "question": "What happens if I click Refresh or Delete?",
+      "answer": "The template will reset and the data will be reconnected automatically.",
+      "keywords": [
+        "nec"
+      ],
+      "related_topics": [
+        "gen-004",
+        "gen-015",
+        "gen-017"
+      ]
+    },
+    {
+      "id": "gen-012",
+      "category": "General",
+      "title": "The overall Zippy workflow look like, from task creation to PDF generation",
+      "question": "What does the overall Zippy workflow look like, from task creation to PDF generation?",
+      "answer": "Create the task, upload the DXF and survey, build the roof and site layouts, place modules and equipment, complete the electrical stringing and SLD, and finally generate the permit PDF.",
+      "keywords": [
+        "dxf",
+        "sld",
+        "roof",
+        "module",
+        "modules",
+        "string",
+        "stringing",
+        "equipment",
+        "survey",
+        "zippy"
+      ],
+      "related_topics": [
+        "gen-004",
+        "gen-002",
+        "gen-007"
+      ]
+    },
+    {
+      "id": "gen-013",
+      "category": "General",
+      "title": "Get the input files and survey report",
+      "question": "Where can I get the input files and survey report?",
+      "answer": "Input files are available on the shared drive, and the survey report is provided by the client through the portal.",
+      "keywords": [
+        "survey"
+      ],
+      "related_topics": [
+        "gen-004",
+        "gen-006",
+        "gen-012"
+      ]
+    },
+    {
+      "id": "gen-014",
+      "category": "General",
+      "title": "What structural information is required",
+      "question": "What structural information is required?",
+      "answer": "Roof type, attachment type, racking system, and spacing.",
+      "keywords": [
+        "roof",
+        "racking"
+      ],
+      "related_topics": [
+        "gen-001",
+        "gen-002",
+        "gen-003"
+      ]
+    },
+    {
+      "id": "gen-015",
+      "category": "General",
+      "title": "What equipment must be included in the design",
+      "question": "What equipment must be included in the design?",
+      "answer": "Junction Box, Combiner / Inverter, AC Disconnect, Production Meter, Main Service Panel (MSP), and Utility Meter (UM).",
+      "keywords": [
+        "nec",
+        "msp",
+        "inverter",
+        "junction box",
+        "equipment",
+        "utility meter",
+        "combiner",
+        "ac disconnect"
+      ],
+      "related_topics": [
+        "gen-004",
+        "gen-017",
+        "gen-018"
+      ]
+    },
+    {
+      "id": "gen-016",
+      "category": "General",
+      "title": "MSP",
+      "question": "What is MSP?",
+      "answer": "MSP stands for Main Service Panel — the main electrical board of the house.",
+      "keywords": [
+        "msp"
+      ],
+      "related_topics": [
+        "gen-015",
+        "gen-019"
+      ]
+    },
+    {
+      "id": "gen-017",
+      "category": "General",
+      "title": "An AC Disconnect and where should it be placed",
+      "question": "What is an AC Disconnect and where should it be placed?",
+      "answer": "The AC Disconnect is a safety switch that isolates the solar system from the grid. It should be placed near the utility meter, within the distance allowed by code.",
+      "keywords": [
+        "nec",
+        "utility meter",
+        "ac disconnect"
+      ],
+      "related_topics": [
+        "gen-015",
+        "gen-004",
+        "gen-011"
+      ]
+    },
+    {
+      "id": "gen-018",
+      "category": "General",
+      "title": "A combiner box",
+      "question": "What is a combiner box?",
+      "answer": "A combiner box combines multiple PV strings into a single output before feeding the inverter.",
+      "keywords": [
+        "inverter",
+        "string",
+        "combiner"
+      ],
+      "related_topics": [
+        "gen-015",
+        "gen-021",
+        "gen-002"
+      ]
+    },
+    {
+      "id": "gen-019",
+      "category": "General",
+      "title": "The inverter be placed",
+      "question": "Where should the inverter be placed?",
+      "answer": "As close as possible to the MSP and in an easily accessible location.",
+      "keywords": [
+        "msp",
+        "inverter"
+      ],
+      "related_topics": [
+        "gen-015",
+        "gen-004",
+        "gen-016"
+      ]
+    },
+    {
+      "id": "gen-020",
+      "category": "General",
+      "title": "Stringing in Zippy",
+      "question": "What is stringing in Zippy?",
+      "answer": "Stringing is the process of connecting solar panels together in series groups.",
+      "keywords": [
+        "nec",
+        "string",
+        "stringing",
+        "zippy"
+      ],
+      "related_topics": [
+        "gen-012",
+        "gen-002",
+        "gen-001"
+      ]
+    },
+    {
+      "id": "gen-021",
+      "category": "General",
+      "title": "The string count defined",
+      "question": "How is the string count defined?",
+      "answer": "It is based on the inverter capacity and the module voltage.",
+      "keywords": [
+        "module",
+        "inverter",
+        "string"
+      ],
+      "related_topics": [
+        "gen-002",
+        "gen-004",
+        "gen-012"
+      ]
+    },
+    {
+      "id": "gen-022",
+      "category": "General",
+      "title": "Modules overlap in the layout",
+      "question": "Why do modules overlap in the layout?",
+      "answer": "Usually due to incorrect spacing, a rotation issue, or a DXF scaling problem.",
+      "keywords": [
+        "dxf",
+        "module",
+        "modules",
+        "rotation"
+      ],
+      "related_topics": [
+        "gen-004",
+        "gen-012",
+        "gen-007"
+      ]
+    },
+    {
+      "id": "gen-023",
+      "category": "General",
+      "title": "The property line mandatory",
+      "question": "Why is the property line mandatory?",
+      "answer": "It defines the setbacks and is required for permit approval.",
+      "keywords": [
+        "setback",
+        "setbacks",
+        "property line"
+      ],
+      "related_topics": [
+        "gen-007",
+        "gen-004",
+        "gen-024"
+      ]
+    },
+    {
+      "id": "gen-024",
+      "category": "General",
+      "title": "A setback and how is it maintained",
+      "question": "What is a setback and how is it maintained?",
+      "answer": "A setback is the required clearance distance from roof edges or the property boundary. It must be maintained as per local code, which is typically 18 to 36 inches depending on the region.",
+      "keywords": [
+        "setback",
+        "roof",
+        "boundary"
+      ],
+      "related_topics": [
+        "gen-007",
+        "gen-001",
+        "gen-002"
+      ]
+    },
+    {
+      "id": "bl-001",
+      "category": "Building Layout",
+      "title": "The Building Layout step cover",
+      "question": "What does the Building Layout step cover?",
+      "answer": "You begin with a layout adjustment to align the imported DXF geometry to the property — toggling between satellite and terrain view helps with this alignment. Once aligned, click *Add Module*, click on the target roof in the 2D design, label the roof, and fill out the roof settings form. The FAQs below cover the rest of the tools and edge cases for this step.",
+      "keywords": [
+        "dxf",
+        "roof",
+        "module",
+        "building layout"
+      ],
+      "related_topics": [
+        "bl-015",
+        "bl-005",
+        "bl-006"
+      ]
+    },
+    {
+      "id": "bl-002",
+      "category": "Building Layout",
+      "title": "Insert a DXF file",
+      "question": "How do I insert a DXF file?",
+      "answer": "Click Upload DXF, browse to select the file from the input folder, and click Upload to complete the import into Zippy.",
+      "keywords": [
+        "dxf",
+        "zippy"
+      ],
+      "related_topics": [
+        "bl-001",
+        "bl-008",
+        "bl-013"
+      ]
+    },
+    {
+      "id": "bl-003",
+      "category": "Building Layout",
+      "title": "Apply a setback on the roof",
+      "question": "How do I apply a setback on the roof?",
+      "answer": "Double-click the target roof, right-click, and open the Roof Lines and Setback Offsets tab. Set the line type (Eave, Ridge, or Rake) and enter the required offset distance — typically 18 inches or 36 inches, depending on the requirement.",
+      "keywords": [
+        "setback",
+        "roof"
+      ],
+      "related_topics": [
+        "bl-005",
+        "bl-007",
+        "bl-001"
+      ]
+    },
+    {
+      "id": "bl-004",
+      "category": "Building Layout",
+      "title": "Set Roof 1, Roof 2, and so on",
+      "question": "How do I set Roof 1, Roof 2, and so on?",
+      "answer": "Double-click inside the roof, then from the Roof Sequence dropdown, select the correct roof number to assign the sequence.",
+      "keywords": [
+        "roof",
+        "roof sequence"
+      ],
+      "related_topics": [
+        "bl-001",
+        "bl-003",
+        "bl-005"
+      ]
+    },
+    {
+      "id": "bl-005",
+      "category": "Building Layout",
+      "title": "Decide whether the setback should be 18 inches or 36 inches",
+      "question": "How do I decide whether the setback should be 18 inches or 36 inches?",
+      "answer": "If the module coverage exceeds 33% of the roof area, apply a 36-inch setback on both sides from the ridge. Otherwise, an 18-inch setback on both sides is sufficient.",
+      "keywords": [
+        "setback",
+        "roof",
+        "module"
+      ],
+      "related_topics": [
+        "bl-001",
+        "bl-003",
+        "bl-006"
+      ]
+    },
+    {
+      "id": "bl-006",
+      "category": "Building Layout",
+      "title": "Add modules to the roof",
+      "question": "How do I add modules to the roof?",
+      "answer": "Use the Add Module option at the bottom center of the screen. Click it to add new or existing modules. To place multiple modules quickly, hold the Ctrl key while clicking.",
+      "keywords": [
+        "roof",
+        "module",
+        "modules"
+      ],
+      "related_topics": [
+        "bl-015",
+        "bl-001",
+        "bl-005"
+      ]
+    },
+    {
+      "id": "bl-007",
+      "category": "Building Layout",
+      "title": "Edit existing setbacks",
+      "question": "How do I edit existing setbacks?",
+      "answer": "Double-click the roof whose setback you want to edit, click Edit Roof, and turn on the Setback option. Edit points will appear on the setback line — drag them to adjust as needed.",
+      "keywords": [
+        "setback",
+        "setbacks",
+        "roof",
+        "drag"
+      ],
+      "related_topics": [
+        "bl-003",
+        "bl-005",
+        "bl-001"
+      ]
+    },
+    {
+      "id": "bl-008",
+      "category": "Building Layout",
+      "title": "Add obstructions if they are missing",
+      "question": "Can I add obstructions if they are missing?",
+      "answer": "Yes, but you need to edit the DXF file itself to add the obstructions and match the correct obstruction layer.",
+      "keywords": [
+        "dxf",
+        "obstruction",
+        "obstructions"
+      ],
+      "related_topics": [
+        "bl-016",
+        "bl-001",
+        "bl-002"
+      ]
+    },
+    {
+      "id": "bl-009",
+      "category": "Building Layout",
+      "title": "Set the gap between modules",
+      "question": "How do I set the gap between modules?",
+      "answer": "There is currently no option to change this — the module-to-module gap is automatically fixed at 0.25 inches.",
+      "keywords": [
+        "module",
+        "modules"
+      ],
+      "related_topics": [
+        "bl-006",
+        "bl-015",
+        "bl-001"
+      ]
+    },
+    {
+      "id": "bl-010",
+      "category": "Building Layout",
+      "title": "Check the AHJ",
+      "question": "How do I check the AHJ?",
+      "answer": "Go to the AHJ Registry website, enter the project address, and the system will show the AHJ.",
+      "keywords": [
+        "ahj"
+      ],
+      "related_topics": []
+    },
+    {
+      "id": "bl-011",
+      "category": "Building Layout",
+      "title": "Check the applicable NEC code",
+      "question": "How do I check the applicable NEC code?",
+      "answer": "Follow the update provided by the client. If that is not available, you can verify it using resources such as the UpCodes website and a general Google search.",
+      "keywords": [
+        "nec",
+        "upcodes"
+      ],
+      "related_topics": []
+    },
+    {
+      "id": "bl-012",
+      "category": "Building Layout",
+      "title": "Identify the utility provider",
+      "question": "How do I identify the utility provider?",
+      "answer": "The utility provider is identified from the client's utility bill. In some cases it can also be confirmed from the utility meter photos.",
+      "keywords": [
+        "utility meter"
+      ],
+      "related_topics": []
+    },
+    {
+      "id": "bl-013",
+      "category": "Building Layout",
+      "title": "Match the roof plane pitch from Aurora or the survey",
+      "question": "How do I match the roof plane pitch from Aurora or the survey?",
+      "answer": "The Aurora team creates the shade report and DXF, which are uploaded to the shared drive. Pull these files from the drive and match the roof pitch to the survey data.",
+      "keywords": [
+        "dxf",
+        "roof",
+        "aurora",
+        "pitch",
+        "survey",
+        "roof plan",
+        "shade report"
+      ],
+      "related_topics": [
+        "bl-015",
+        "bl-001",
+        "bl-002"
+      ]
+    },
+    {
+      "id": "bl-014",
+      "category": "Building Layout",
+      "title": "We choose portrait vs. landscape orientation",
+      "question": "Why do we choose portrait vs. landscape orientation?",
+      "answer": "Orientation is selected based on roof space utilization, structural support, obstruction handling, and the electrical layout.",
+      "keywords": [
+        "roof",
+        "orientation",
+        "obstruction"
+      ],
+      "related_topics": [
+        "bl-001",
+        "bl-003",
+        "bl-004"
+      ]
+    },
+    {
+      "id": "bl-015",
+      "category": "Building Layout",
+      "title": "Align modules to the given tilt from Aurora",
+      "question": "How do I align modules to the given tilt from Aurora?",
+      "answer": "On the Building Layout page, select the roof plane and roof eave, then input the roof tilt based on the survey data. Once the tilt is applied, place the modules on the selected roof — they will automatically align and rotate to match the roof plane. Always verify that the tilt matches the actual roof pitch from the survey, not just the Aurora value.",
+      "keywords": [
+        "roof",
+        "module",
+        "modules",
+        "aurora",
+        "tilt",
+        "pitch",
+        "survey",
+        "building layout",
+        "roof plan",
+        "roof tilt"
+      ],
+      "related_topics": [
+        "bl-013",
+        "bl-001",
+        "bl-006"
+      ]
+    },
+    {
+      "id": "bl-016",
+      "category": "Building Layout",
+      "title": "Delete obstructions",
+      "question": "How do I delete obstructions?",
+      "answer": "Right-click on the obstruction and select the Delete option.",
+      "keywords": [
+        "obstruction",
+        "obstructions"
+      ],
+      "related_topics": [
+        "bl-008",
+        "bl-014"
+      ]
+    },
+    {
+      "id": "bl-017",
+      "category": "Building Layout",
+      "title": "Select the inverter, module, and optimizer",
+      "question": "How do I select the inverter, module, and optimizer?",
+      "answer": "This option is available on the Site Plan page — navigate there to select them.",
+      "keywords": [
+        "module",
+        "inverter",
+        "optimizer",
+        "site plan"
+      ],
+      "related_topics": [
+        "bl-001",
+        "bl-005",
+        "bl-006"
+      ]
+    },
+    {
+      "id": "sp-001",
+      "category": "Site Plan",
+      "title": "The Site Plan step cover",
+      "question": "What does the Site Plan step cover?",
+      "answer": "This is Step 2 of the Zippy workflow. Start by filling in the structured information sourced from the survey file. Next, fill in the Electrical Information form — note that this form is activated only after the Utility Meter and MSP have been added from the equipments list at the bottom of the toolbar and the home information has been completed. Use the Text tool to label the street, then type the street name. The FAQs below cover the remaining tools and edge cases for this step.",
+      "keywords": [
+        "msp",
+        "electrical information",
+        "equipment",
+        "utility meter",
+        "tree",
+        "survey",
+        "site plan",
+        "zippy"
+      ],
+      "related_topics": [
+        "sp-035",
+        "sp-028",
+        "sp-027"
+      ]
+    },
+    {
+      "id": "sp-002",
+      "category": "Site Plan",
+      "title": "Save, refresh, and zoom in and out, and how do I toggle between satellite and terrain view",
+      "question": "How do I save, refresh, and zoom in and out, and how do I toggle between satellite and terrain view?",
+      "answer": "Use the Save and Refresh buttons in the top-right corner to manage your progress. Use the + and − buttons in the bottom-center to zoom in and out. In the bottom-right corner, select Center View, Satellite, or Terrain to switch between map views.",
+      "keywords": [],
+      "related_topics": []
+    },
+    {
+      "id": "sp-003",
+      "category": "Site Plan",
+      "title": "Draw a fire setback",
+      "question": "How do I draw a fire setback?",
+      "answer": "Double-click the target roof, right-click, and go to the Roof Lines and Setback Offsets tab. Set the line type to Eave and enter the required offset distance.",
+      "keywords": [
+        "setback",
+        "roof",
+        "fire setback"
+      ],
+      "related_topics": [
+        "sp-048",
+        "sp-004",
+        "sp-005"
+      ]
+    },
+    {
+      "id": "sp-004",
+      "category": "Site Plan",
+      "title": "Assign the roof number, tilt, and eave",
+      "question": "How do I assign the roof number, tilt, and eave?",
+      "answer": "Double-click the target roof, right-click, and select Edit Roof. Choose the roof number and slope, then go to the Roof Lines and Setback Offsets tab and set the line type to Eave.",
+      "keywords": [
+        "setback",
+        "roof",
+        "tilt"
+      ],
+      "related_topics": [
+        "sp-003",
+        "sp-048",
+        "sp-005"
+      ]
+    },
+    {
+      "id": "sp-005",
+      "category": "Site Plan",
+      "title": "Place a module",
+      "question": "How do I place a module?",
+      "answer": "Double-click the target roof and select Add Modules. Choose New or Existing based on your requirement, then hover over the roof area to position and place the modules.",
+      "keywords": [
+        "roof",
+        "module",
+        "modules"
+      ],
+      "related_topics": [
+        "sp-008",
+        "sp-048",
+        "sp-037"
+      ]
+    },
+    {
+      "id": "sp-006",
+      "category": "Site Plan",
+      "title": "Change a module's orientation from portrait to landscape",
+      "question": "How do I change a module's orientation from portrait to landscape?",
+      "answer": "Right-click on the module and select Switch Orientation.",
+      "keywords": [
+        "module",
+        "orientation"
+      ],
+      "related_topics": [
+        "sp-005",
+        "sp-007",
+        "sp-008"
+      ]
+    },
+    {
+      "id": "sp-007",
+      "category": "Site Plan",
+      "title": "Rotate a module",
+      "question": "How do I rotate a module?",
+      "answer": "Right-click on the module and select Rotate. The module will rotate to the selected angle.",
+      "keywords": [
+        "module"
+      ],
+      "related_topics": [
+        "sp-005",
+        "sp-006",
+        "sp-008"
+      ]
+    },
+    {
+      "id": "sp-008",
+      "category": "Site Plan",
+      "title": "Fill in the structure information (roof material, rafter size, and spacing)",
+      "question": "How do I fill in the structure information (roof material, rafter size, and spacing)?",
+      "answer": "Click the Structure Information button located directly below the Building Layout tab. From there, you can set properties for Roof, Racking, Modules, Attachments, Framing, and Pitch based on your project requirements.",
+      "keywords": [
+        "roof",
+        "module",
+        "modules",
+        "rafter",
+        "structure information",
+        "pitch",
+        "building layout",
+        "framing",
+        "racking"
+      ],
+      "related_topics": [
+        "sp-005",
+        "sp-048",
+        "sp-009"
+      ]
+    },
+    {
+      "id": "sp-009",
+      "category": "Site Plan",
+      "title": "My framing size (for example, 4×6) is not in the dropdown",
+      "question": "What should I do if my framing size (for example, 4×6) is not in the dropdown?",
+      "answer": "If the framing size is not in the dropdown, check the Raise Plan Set section. Return to the initial Drafting (DXF) area, open Structure Information, and click on Size — the additional framing sizes should appear there.",
+      "keywords": [
+        "dxf",
+        "structure information",
+        "framing"
+      ],
+      "related_topics": [
+        "sp-008",
+        "sp-028"
+      ]
+    },
+    {
+      "id": "sp-010",
+      "category": "Site Plan",
+      "title": "Set an attachment distance other than the default 48\" or 72\"",
+      "question": "How do I set an attachment distance other than the default 48\" or 72\"?",
+      "answer": "Click the Structural Information icon at the top-left of the page, open the Span Table option in the attachment distance section, and enter the custom distance you need.",
+      "keywords": [
+        "span table",
+        "attachment distance"
+      ],
+      "related_topics": [
+        "sp-011"
+      ]
+    },
+    {
+      "id": "sp-011",
+      "category": "Site Plan",
+      "title": "Set the attachment distance",
+      "question": "How do I set the attachment distance?",
+      "answer": "Click Attachment Distance in the Structural Information section and enter the required value.",
+      "keywords": [
+        "attachment distance"
+      ],
+      "related_topics": [
+        "sp-010"
+      ]
+    },
+    {
+      "id": "sp-012",
+      "category": "Site Plan",
+      "title": "Draw a property line",
+      "question": "How do I draw a property line?",
+      "answer": "Select the Propertyline tool from the bottom toolbar. The cursor will change to a crosshair (+) — use it to trace the property boundaries on the map.",
+      "keywords": [
+        "property line"
+      ],
+      "related_topics": [
+        "sp-013",
+        "sp-014",
+        "sp-015"
+      ]
+    },
+    {
+      "id": "sp-013",
+      "category": "Site Plan",
+      "title": "Create a curve in the property line",
+      "question": "How do I create a curve in the property line?",
+      "answer": "Select the property line and toggle Edit mode. Blue circular nodes will appear at the midpoint of each segment — click and drag these nodes to curve the boundary as needed.",
+      "keywords": [
+        "property line",
+        "drag",
+        "boundary"
+      ],
+      "related_topics": [
+        "sp-015",
+        "sp-014",
+        "sp-017"
+      ]
+    },
+    {
+      "id": "sp-014",
+      "category": "Site Plan",
+      "title": "Create a zigzag in the property line for very large properties",
+      "question": "How do I create a zigzag in the property line for very large properties?",
+      "answer": "In Edit mode, each segment has a blue midpoint node and a smaller transparent node next to it. Hold and drag the small transparent node (not the blue one) to create a zigzag.",
+      "keywords": [
+        "property line",
+        "drag"
+      ],
+      "related_topics": [
+        "sp-013",
+        "sp-015",
+        "sp-017"
+      ]
+    },
+    {
+      "id": "sp-015",
+      "category": "Site Plan",
+      "title": "Create a break-line symbol to shorten the property line within the PDF boundary",
+      "question": "How do I create a break-line symbol to shorten the property line within the PDF boundary?",
+      "answer": "In Property Line Edit mode, you will see transparent nodes next to the blue midpoint nodes. Click and drag these transparent circles to add new vertices, allowing you to break the segment and create a break-line symbol.",
+      "keywords": [
+        "property line",
+        "pdf boundary",
+        "drag",
+        "boundary"
+      ],
+      "related_topics": [
+        "sp-013",
+        "sp-030",
+        "sp-014"
+      ]
+    },
+    {
+      "id": "sp-016",
+      "category": "Site Plan",
+      "title": "Add break lines in the drawing",
+      "question": "How do I add break lines in the drawing?",
+      "answer": "Click the Tools option at the bottom of the page, select Polyline, and draw the break line where required.",
+      "keywords": [
+        "break line",
+        "polyline"
+      ],
+      "related_topics": [
+        "sp-019",
+        "sp-020",
+        "sp-021"
+      ]
+    },
+    {
+      "id": "sp-017",
+      "category": "Site Plan",
+      "title": "Scale the property line correctly",
+      "question": "How do I scale the property line correctly?",
+      "answer": "First, draw the property line as it is and add dimensions from the house to the property line. Take a screenshot or photo for reference. Then click the drawn property line, enter Edit mode, and drag the points to match the dimensions captured in your reference image.",
+      "keywords": [
+        "property line",
+        "dimension",
+        "drag"
+      ],
+      "related_topics": [
+        "sp-013",
+        "sp-014",
+        "sp-015"
+      ]
+    },
+    {
+      "id": "sp-018",
+      "category": "Site Plan",
+      "title": "Draw a driveway",
+      "question": "How do I draw a driveway?",
+      "answer": "Select the Driveway tool from the available options and trace the driveway accurately on the map.",
+      "keywords": [
+        "driveway"
+      ],
+      "related_topics": [
+        "sp-019"
+      ]
+    },
+    {
+      "id": "sp-019",
+      "category": "Site Plan",
+      "title": "Draw a street",
+      "question": "How do I draw a street?",
+      "answer": "Press Ctrl + Shift + O to turn on Ortho, then press Shift + R and align it with the property line on the street side. Draw the street using either a Polyline or the Driveway line tool.",
+      "keywords": [
+        "property line",
+        "ortho",
+        "driveway",
+        "tree",
+        "polyline"
+      ],
+      "related_topics": [
+        "sp-053",
+        "sp-033",
+        "sp-001"
+      ]
+    },
+    {
+      "id": "sp-020",
+      "category": "Site Plan",
+      "title": "Draw a detached structure on the site plan",
+      "question": "How do I draw a detached structure on the site plan?",
+      "answer": "Press Ctrl + Shift + O, then Shift + R to align to the detached structure. Draw it using a Polyline, then change the polyline color to match the structure's color.",
+      "keywords": [
+        "site plan",
+        "polyline"
+      ],
+      "related_topics": [
+        "sp-021",
+        "sp-001",
+        "sp-016"
+      ]
+    },
+    {
+      "id": "sp-021",
+      "category": "Site Plan",
+      "title": "Draw a pool on the site plan",
+      "question": "How do I draw a pool on the site plan?",
+      "answer": "Use the Polyline tool to trace the shape of the pool, then edit the polyline to refine the outline and change its color to match the pool. If the pool is circular, use the Circle tool instead.",
+      "keywords": [
+        "pool",
+        "site plan",
+        "polyline"
+      ],
+      "related_topics": [
+        "sp-020",
+        "sp-033",
+        "sp-001"
+      ]
+    },
+    {
+      "id": "sp-022",
+      "category": "Site Plan",
+      "title": "Add additional structures that are present on the property",
+      "question": "Can I add additional structures that are present on the property?",
+      "answer": "Yes. Click the Tools option at the bottom of the page to find drawing options for additional structures.",
+      "keywords": [],
+      "related_topics": []
+    },
+    {
+      "id": "sp-023",
+      "category": "Site Plan",
+      "title": "Draw a fence and modify it",
+      "question": "How do I draw a fence and modify it?",
+      "answer": "Select the Fence tool from the bottom menu to open its configuration tab. Enter the desired offset from the property line (for example, 0.6 ft) in the input box, then click Add Fence to generate the fence around the boundary. You can click the fence afterwards to edit it.",
+      "keywords": [
+        "property line",
+        "fence",
+        "boundary"
+      ],
+      "related_topics": [
+        "sp-013",
+        "sp-015",
+        "sp-045"
+      ]
+    },
+    {
+      "id": "sp-024",
+      "category": "Site Plan",
+      "title": "Place a chimney and resize it",
+      "question": "How do I place a chimney and resize it?",
+      "answer": "Select the Chimney tool from the bottom menu. A chimney block will attach to your cursor — move it to the desired location on the roof and click to place it. You can then resize it as needed.",
+      "keywords": [
+        "roof",
+        "chimney"
+      ],
+      "related_topics": [
+        "sp-003",
+        "sp-004",
+        "sp-005"
+      ]
+    },
+    {
+      "id": "sp-025",
+      "category": "Site Plan",
+      "title": "Place trees and adjust their size",
+      "question": "How do I place trees and adjust their size?",
+      "answer": "Select the Tree tool from the bottom menu to place a tree on the map. Click and drag its nodes to resize the tree to the required scale.",
+      "keywords": [
+        "tree",
+        "drag"
+      ],
+      "related_topics": [
+        "sp-001",
+        "sp-013",
+        "sp-014"
+      ]
+    },
+    {
+      "id": "sp-026",
+      "category": "Site Plan",
+      "title": "Give callouts for structures and equipment, and how do I resize them",
+      "question": "How do I give callouts for structures and equipment, and how do I resize them?",
+      "answer": "Select the Text tool from the bottom menu to open the callout panel. Toggle on the Callout option to view available structure and equipment labels, or choose Custom Text to enter a manual description. Once the callout appears, drag it to the component you wish to label.",
+      "keywords": [
+        "callout",
+        "callouts",
+        "equipment",
+        "drag"
+      ],
+      "related_topics": [
+        "sp-001",
+        "sp-013",
+        "sp-014"
+      ]
+    },
+    {
+      "id": "sp-027",
+      "category": "Site Plan",
+      "title": "Place equipment on the site plan",
+      "question": "How do I place equipment on the site plan?",
+      "answer": "Open the Equipments tab from the bottom toolbar. Select the required equipment from the panel and place it on the house at the exact location where it is actually installed.",
+      "keywords": [
+        "equipment",
+        "site plan"
+      ],
+      "related_topics": [
+        "sp-001",
+        "sp-034",
+        "sp-020"
+      ]
+    },
+    {
+      "id": "sp-028",
+      "category": "Site Plan",
+      "title": "Fill in electrical information",
+      "question": "How do I fill in electrical information?",
+      "answer": "Click the Electrical Information button located directly below Structure Information. Fill in the required details — for example, the MSP amperage and brand, and the utility meter details — based on your project.",
+      "keywords": [
+        "msp",
+        "structure information",
+        "electrical information",
+        "utility meter"
+      ],
+      "related_topics": [
+        "sp-001",
+        "sp-035",
+        "sp-008"
+      ]
+    },
+    {
+      "id": "sp-029",
+      "category": "Site Plan",
+      "title": "Use the magnifier to view equipment at a larger size",
+      "question": "How do I use the magnifier to view equipment at a larger size?",
+      "answer": "Select the Magnifier tool from the bottom menu and click the region you want to enlarge. A detail box will appear showing a magnified view. You can resize the rectangle, adjust the zoom level inside it, and position it anywhere on the layout.",
+      "keywords": [
+        "equipment",
+        "magnifier"
+      ],
+      "related_topics": [
+        "sp-034",
+        "sp-001",
+        "sp-026"
+      ]
+    },
+    {
+      "id": "sp-030",
+      "category": "Site Plan",
+      "title": "Set the PDF boundary",
+      "question": "How do I set the PDF boundary?",
+      "answer": "Select PDF Boundary from the bottom menu and toggle on Visibility. A white rectangle will appear behind your layout — click and drag it until your drafting is centered within the boundary.",
+      "keywords": [
+        "pdf boundary",
+        "drag",
+        "boundary"
+      ],
+      "related_topics": [
+        "sp-015",
+        "sp-013",
+        "sp-031"
+      ]
+    },
+    {
+      "id": "sp-031",
+      "category": "Site Plan",
+      "title": "Set the page to a specific scale",
+      "question": "How do I set the page to a specific scale?",
+      "answer": "Click the PDF Boundary icon at the bottom of the page and turn on Visibility. Use the Select Scale option below it to set the required scale, then turn Visibility off again.",
+      "keywords": [
+        "pdf boundary",
+        "boundary"
+      ],
+      "related_topics": [
+        "sp-015",
+        "sp-030",
+        "sp-013"
+      ]
+    },
+    {
+      "id": "sp-032",
+      "category": "Site Plan",
+      "title": "Give a dimension from the roof to the property line",
+      "question": "How do I give a dimension from the roof to the property line?",
+      "answer": "Select Tools from the bottom menu and click Dimension. When the cursor turns red, click the edge of the roof closest to the property line, then click the property line — the dimension will be drawn between them.",
+      "keywords": [
+        "roof",
+        "property line",
+        "dimension"
+      ],
+      "related_topics": [
+        "sp-017",
+        "sp-042",
+        "sp-045"
+      ]
+    },
+    {
+      "id": "sp-033",
+      "category": "Site Plan",
+      "title": "Use a polyline to draw a street, pool, or other structures",
+      "question": "How do I use a polyline to draw a street, pool, or other structures?",
+      "answer": "Go to Tools in the bottom menu and select Polyline. The cursor will change to a crosshair (+), letting you draw custom shapes by clicking to place each vertex.",
+      "keywords": [
+        "pool",
+        "tree",
+        "polyline"
+      ],
+      "related_topics": [
+        "sp-019",
+        "sp-021",
+        "sp-001"
+      ]
+    },
+    {
+      "id": "sp-034",
+      "category": "Site Plan",
+      "title": "Set a viewport on the site plan",
+      "question": "How do I set a viewport on the site plan?",
+      "answer": "Click the Magnifier tool, then draw a rectangle over the equipment you want to create a viewport for. Resize as needed, click the green check to confirm, and place the viewport wherever you want it on the page.",
+      "keywords": [
+        "equipment",
+        "magnifier",
+        "viewport",
+        "site plan"
+      ],
+      "related_topics": [
+        "sp-001",
+        "sp-027",
+        "sp-029"
+      ]
+    },
+    {
+      "id": "sp-035",
+      "category": "Site Plan",
+      "title": "Check the existing equipment location and rating (utility, MSP)",
+      "question": "How do I check the existing equipment location and rating (utility, MSP)?",
+      "answer": "Check the survey report provided by the client for the location and ratings of the existing utility meter and Main Service Panel (MSP).",
+      "keywords": [
+        "msp",
+        "equipment",
+        "utility meter",
+        "survey"
+      ],
+      "related_topics": [
+        "sp-001",
+        "sp-028",
+        "sp-026"
+      ]
+    },
+    {
+      "id": "sp-036",
+      "category": "Site Plan",
+      "title": "It important to check equipment ratings",
+      "question": "Why is it important to check equipment ratings?",
+      "answer": "Checking ratings ensures the system is safe and correctly designed. Without verification you may select the wrong breaker or wire size, which can cause safety issues or permit rejection.",
+      "keywords": [
+        "wire",
+        "breaker",
+        "equipment",
+        "wire size"
+      ],
+      "related_topics": [
+        "sp-001",
+        "sp-026",
+        "sp-027"
+      ]
+    },
+    {
+      "id": "sp-037",
+      "category": "Site Plan",
+      "title": "Select the inverter size, and which inverter is suitable for a given module",
+      "question": "How do I select the inverter size, and which inverter is suitable for a given module?",
+      "answer": "Calculate the total DC system size by multiplying the number of modules by the module wattage. Then choose an inverter whose capacity is lower than or close to the system size, and verify the DC/AC ratio. Also confirm the inverter's voltage and current limits are compatible with the modules.",
+      "keywords": [
+        "module",
+        "modules",
+        "inverter",
+        "dc/ac ratio",
+        "dc system size",
+        "module wattage",
+        "system size"
+      ],
+      "related_topics": [
+        "sp-005",
+        "sp-008",
+        "sp-048"
+      ]
+    },
+    {
+      "id": "sp-038",
+      "category": "Site Plan",
+      "title": "Determine whether it is a load-side or supply-side connection",
+      "question": "How do I determine whether it is a load-side or supply-side connection?",
+      "answer": "Check the main panel rating and apply the NEC 120% rule. If the solar breaker fits within the panel limit, it is a load-side (backfeed) connection. If it exceeds the limit, a supply-side connection (tapping) is required.",
+      "keywords": [
+        "nec",
+        "breaker",
+        "backfeed",
+        "supply-side",
+        "load-side"
+      ],
+      "related_topics": [
+        "sp-036",
+        "sp-039",
+        "sp-040"
+      ]
+    },
+    {
+      "id": "sp-039",
+      "category": "Site Plan",
+      "title": "We apply the NEC 120% rule",
+      "question": "Why do we apply the NEC 120% rule?",
+      "answer": "The 120% rule ensures the main panel is not overloaded when solar is added.",
+      "keywords": [
+        "nec"
+      ],
+      "related_topics": [
+        "sp-038"
+      ]
+    },
+    {
+      "id": "sp-040",
+      "category": "Site Plan",
+      "title": "Size the solar breaker",
+      "question": "How do I size the solar breaker?",
+      "answer": "Take the inverter's AC output current, multiply it by the 1.25 safety factor, then round up to the next standard breaker size.",
+      "keywords": [
+        "inverter",
+        "breaker"
+      ],
+      "related_topics": [
+        "sp-036",
+        "sp-037",
+        "sp-038"
+      ]
+    },
+    {
+      "id": "sp-041",
+      "category": "Site Plan",
+      "title": "The meter number or utility provider is missing",
+      "question": "What should I do if the meter number or utility provider is missing?",
+      "answer": "Check with the client first and put the file on hold in the meantime, since the meter number and utility provider are required information.",
+      "keywords": [],
+      "related_topics": []
+    },
+    {
+      "id": "sp-042",
+      "category": "Site Plan",
+      "title": "Check roof details (type, size, obstructions)",
+      "question": "How do I check roof details (type, size, obstructions)?",
+      "answer": "Check the survey report provided by the client for roof type, dimensions, pitch, and obstructions. Cross-verify using site photos, aerial imagery from Google Maps, and tools such as the ArcGIS web viewer.",
+      "keywords": [
+        "roof",
+        "dimension",
+        "pitch",
+        "google maps",
+        "arcgis",
+        "survey",
+        "obstruction",
+        "obstructions"
+      ],
+      "related_topics": [
+        "sp-008",
+        "sp-032",
+        "sp-043"
+      ]
+    },
+    {
+      "id": "sp-043",
+      "category": "Site Plan",
+      "title": "Source is most reliable for checking the property area",
+      "question": "Which source is most reliable for checking the property area?",
+      "answer": "Use Regrid (app.regrid.com/us) and Google Maps for initial reference, but always verify property boundaries using the official survey documents.",
+      "keywords": [
+        "regrid",
+        "google maps",
+        "survey"
+      ],
+      "related_topics": [
+        "sp-042",
+        "sp-044",
+        "sp-046"
+      ]
+    },
+    {
+      "id": "sp-044",
+      "category": "Site Plan",
+      "title": "The property line is not visible on the portal map",
+      "question": "What should I do if the property line is not visible on the portal map?",
+      "answer": "Use Regrid (app.regrid.com/us) and Google Maps as references to determine the property line.",
+      "keywords": [
+        "property line",
+        "regrid",
+        "google maps"
+      ],
+      "related_topics": [
+        "sp-043",
+        "sp-046",
+        "sp-012"
+      ]
+    },
+    {
+      "id": "sp-045",
+      "category": "Site Plan",
+      "title": "Draw a break line",
+      "question": "How and why do I draw a break line?",
+      "answer": "On the Site Plan page, first draw the full property line using the Property Line tool. If the property is too large to fit within the drawing boundary or sheet scale, apply a break line and add a break-line symbol to shorten the view. Always retain the original dimensions — the break is only a visual adjustment and does not change the actual property size.",
+      "keywords": [
+        "property line",
+        "dimension",
+        "site plan",
+        "break line",
+        "boundary"
+      ],
+      "related_topics": [
+        "sp-013",
+        "sp-015",
+        "sp-017"
+      ]
+    },
+    {
+      "id": "sp-046",
+      "category": "Site Plan",
+      "title": "Consider the nearest cross street",
+      "question": "How do I consider the nearest cross street?",
+      "answer": "Use tools such as Google Maps or Regrid to locate the nearest cross street.",
+      "keywords": [
+        "tree",
+        "regrid",
+        "google maps",
+        "cross street"
+      ],
+      "related_topics": [
+        "sp-043",
+        "sp-044",
+        "sp-047"
+      ]
+    },
+    {
+      "id": "sp-047",
+      "category": "Site Plan",
+      "title": "We show the nearest cross street",
+      "question": "Why do we show the nearest cross street?",
+      "answer": "The nearest cross street is required on some projects (for example, in Pennsylvania) to clearly indicate the project location for reviewers and to mark the main property address.",
+      "keywords": [
+        "tree",
+        "cross street"
+      ],
+      "related_topics": [
+        "sp-046",
+        "sp-001",
+        "sp-019"
+      ]
+    },
+    {
+      "id": "sp-048",
+      "category": "Site Plan",
+      "title": "Apply fire setback rules",
+      "question": "How do I apply fire setback rules?",
+      "answer": "First verify the AHJ's setback requirements, then apply clearances from the ridge, edges, and pathways when placing modules. For ridged roofs, apply the 33% rule — if the array covers more than 33% of the roof width, provide a minimum 36-inch pathway from ridge to eave; otherwise, a smaller setback such as 18 inches may be acceptable, depending on the AHJ.",
+      "keywords": [
+        "ahj",
+        "setback",
+        "roof",
+        "module",
+        "modules",
+        "fire setback"
+      ],
+      "related_topics": [
+        "sp-003",
+        "sp-005",
+        "sp-008"
+      ]
+    },
+    {
+      "id": "sp-049",
+      "category": "Site Plan",
+      "title": "Turn Ortho mode on or off",
+      "question": "How do I turn Ortho mode on or off?",
+      "answer": "Press Ctrl + Shift + O to toggle Ortho mode.",
+      "keywords": [
+        "ortho"
+      ],
+      "related_topics": [
+        "sp-019",
+        "sp-050",
+        "sp-051"
+      ]
+    },
+    {
+      "id": "sp-050",
+      "category": "Site Plan",
+      "title": "Command is used to align Ortho",
+      "question": "Which command is used to align Ortho?",
+      "answer": "Press Shift + R to take a reference and align Ortho to a line or edge.",
+      "keywords": [
+        "ortho"
+      ],
+      "related_topics": [
+        "sp-019",
+        "sp-049",
+        "sp-051"
+      ]
+    },
+    {
+      "id": "sp-051",
+      "category": "Site Plan",
+      "title": "Rotate a dimension according to the roof",
+      "question": "How do I rotate a dimension according to the roof?",
+      "answer": "Turn on Ortho by pressing Ctrl + Shift + O, then press Shift + R to set a reference. Click the first point of the roof, then the second point — Ortho will rotate to match that reference. Any dimension you add afterwards will follow the same angle.",
+      "keywords": [
+        "roof",
+        "ortho",
+        "dimension"
+      ],
+      "related_topics": [
+        "sp-032",
+        "sp-042",
+        "sp-052"
+      ]
+    },
+    {
+      "id": "sp-052",
+      "category": "Site Plan",
+      "title": "Reset the dimension back to a zero-degree angle",
+      "question": "How do I reset the dimension back to a zero-degree angle?",
+      "answer": "If Ortho is off, press Ctrl + Shift + O to turn it on, then press Shift + 0 to reset the angle.",
+      "keywords": [
+        "ortho",
+        "dimension"
+      ],
+      "related_topics": [
+        "sp-051",
+        "sp-017",
+        "sp-019"
+      ]
+    },
+    {
+      "id": "sp-053",
+      "category": "Site Plan",
+      "title": "Align the street name with the property line",
+      "question": "How do I align the street name with the property line?",
+      "answer": "Press Ctrl + Shift + O to enable Ortho, then Shift + R to align it with the property line. Go to Text, select the street name, and it will align automatically with the property line.",
+      "keywords": [
+        "property line",
+        "ortho",
+        "tree"
+      ],
+      "related_topics": [
+        "sp-019",
+        "sp-001",
+        "sp-012"
+      ]
+    },
+    {
+      "id": "sp-054",
+      "category": "Site Plan",
+      "title": "Use Ortho",
+      "question": "How do I use Ortho?",
+      "answer": "Ctrl + Shift + O toggles Ortho on and off, and Shift + R (or Ctrl + R) is used to take a reference or align objects.",
+      "keywords": [
+        "ortho"
+      ],
+      "related_topics": [
+        "sp-019",
+        "sp-049",
+        "sp-050"
+      ]
+    },
+    {
+      "id": "rp-001",
+      "category": "Roof Plan",
+      "title": "The Roof Plan step cover",
+      "question": "What does the Roof Plan step cover?",
+      "answer": "This is Step 3 of the Zippy workflow. It supports roof orientation, including labeling the front and back of the residence.",
+      "keywords": [
+        "roof",
+        "orientation",
+        "roof plan",
+        "zippy"
+      ],
+      "related_topics": [
+        "rp-009",
+        "rp-010",
+        "rp-012"
+      ]
+    },
+    {
+      "id": "rp-002",
+      "category": "Roof Plan",
+      "title": "Enable Ortho mode and align it with the house or any structure",
+      "question": "How do I enable Ortho mode and align it with the house or any structure?",
+      "answer": "Press Ctrl + Shift + O to enable Ortho mode. To align the workspace with a house or structure, press Shift + R and select your reference line.",
+      "keywords": [
+        "ortho"
+      ],
+      "related_topics": [
+        "rp-003",
+        "rp-004",
+        "rp-008"
+      ]
+    },
+    {
+      "id": "rp-003",
+      "category": "Roof Plan",
+      "title": "Give dimensions from the roof to the modules",
+      "question": "How do I give dimensions from the roof to the modules?",
+      "answer": "Turn on Ortho (Ctrl + Shift + O) and set a reference (Shift + R). Then select Tools from the bottom menu and click Dimension. When the red circle appears on your cursor, click the roof corner first, then the module array corner — this will draw the dimension.",
+      "keywords": [
+        "roof",
+        "module",
+        "modules",
+        "ortho",
+        "dimension"
+      ],
+      "related_topics": [
+        "rp-004",
+        "rp-010",
+        "rp-015"
+      ]
+    },
+    {
+      "id": "rp-004",
+      "category": "Roof Plan",
+      "title": "Give dimensions to modules and the roof",
+      "question": "How do I give dimensions to modules and the roof?",
+      "answer": "Turn on Ortho (Ctrl + Shift + O) and take a reference (Shift + R). In Tools, select Dimension — dimension mode will start. Click the eave point first, then the first point where the module starts. Repeat this to dimension all modules.",
+      "keywords": [
+        "roof",
+        "module",
+        "modules",
+        "ortho",
+        "dimension"
+      ],
+      "related_topics": [
+        "rp-003",
+        "rp-010",
+        "rp-015"
+      ]
+    },
+    {
+      "id": "rp-005",
+      "category": "Roof Plan",
+      "title": "Add callouts for a fire setback",
+      "question": "How do I add callouts for a fire setback?",
+      "answer": "Hover over the setback area and right-click. Select Draw Setback Texts from the context menu to automatically generate and place the setback callouts on the roof.",
+      "keywords": [
+        "setback",
+        "roof",
+        "callout",
+        "callouts",
+        "fire setback"
+      ],
+      "related_topics": [
+        "rp-007",
+        "rp-008",
+        "rp-001"
+      ]
+    },
+    {
+      "id": "rp-006",
+      "category": "Roof Plan",
+      "title": "Add roof descriptions (Roof 1, Roof 2, etc.) with tilt and azimuth",
+      "question": "How do I add roof descriptions (Roof 1, Roof 2, etc.) with tilt and azimuth?",
+      "answer": "Select Roof Slope from the bottom menu. Place the indicator near the roof edge. Click it to open its properties, then select Roof 1, Roof 2, and so on — the tilt and azimuth will be automatically populated from the values entered in the Site Plan.",
+      "keywords": [
+        "roof",
+        "tilt",
+        "azimuth",
+        "site plan"
+      ],
+      "related_topics": [
+        "rp-012",
+        "rp-001",
+        "rp-003"
+      ]
+    },
+    {
+      "id": "rp-007",
+      "category": "Roof Plan",
+      "title": "Add street, front, and back of house callouts",
+      "question": "How do I add street, front, and back of house callouts?",
+      "answer": "Select the Text tool from the bottom menu to open the callout panel. Toggle on the Callout option and choose the required label, such as Street, Front of Residence, or Back of Residence.",
+      "keywords": [
+        "callout",
+        "callouts",
+        "tree"
+      ],
+      "related_topics": [
+        "rp-005",
+        "rp-008",
+        "rp-011"
+      ]
+    },
+    {
+      "id": "rp-008",
+      "category": "Roof Plan",
+      "title": "Correctly orient 'Front of Residence' and 'Back of Residence' callouts",
+      "question": "How do I correctly orient 'Front of Residence' and 'Back of Residence' callouts?",
+      "answer": "Turn on Ortho (Ctrl + Shift + O), then use Shift + R to set the reference based on the front of the house. Go to Text, select Front of Residence — the callout will align to the reference automatically. You can resize it as needed.",
+      "keywords": [
+        "ortho",
+        "callout",
+        "callouts"
+      ],
+      "related_topics": [
+        "rp-005",
+        "rp-007",
+        "rp-002"
+      ]
+    },
+    {
+      "id": "rp-009",
+      "category": "Roof Plan",
+      "title": "Draw a trench on the Roof Plan",
+      "question": "How do I draw a trench on the Roof Plan?",
+      "answer": "After completing the stringing and placing conduits on the String Layout, return to the Roof Plan. Navigate to Tools in the bottom menu, select Trench, and click along the conduit path to draw the trench from the start point to the end point.",
+      "keywords": [
+        "roof",
+        "string",
+        "stringing",
+        "conduit",
+        "roof plan",
+        "string layout"
+      ],
+      "related_topics": [
+        "rp-010",
+        "rp-001",
+        "rp-012"
+      ]
+    },
+    {
+      "id": "rp-010",
+      "category": "Roof Plan",
+      "title": "Make the optimizer or microinverter visible after stringing",
+      "question": "How do I make the optimizer or microinverter visible after stringing?",
+      "answer": "If the optimizers do not appear on the Roof Plan after stringing, hover over a module, right-click, and select Redraw Microinverters — this forces the microinverters or optimizers to display on the roof layout.",
+      "keywords": [
+        "roof",
+        "module",
+        "inverter",
+        "string",
+        "stringing",
+        "optimizer",
+        "microinverter",
+        "roof plan",
+        "microinverters"
+      ],
+      "related_topics": [
+        "rp-015",
+        "rp-009",
+        "rp-001"
+      ]
+    },
+    {
+      "id": "rp-011",
+      "category": "Roof Plan",
+      "title": "Find the total number of attachments",
+      "question": "How do I find the total number of attachments?",
+      "answer": "Navigate to the Text menu and scroll to the bottom of the Callout list. The Attachment Callout will display the total count in brackets.",
+      "keywords": [
+        "callout"
+      ],
+      "related_topics": [
+        "rp-005",
+        "rp-007",
+        "rp-008"
+      ]
+    },
+    {
+      "id": "rp-012",
+      "category": "Roof Plan",
+      "title": "Set the roof slope",
+      "question": "How do I set the roof slope?",
+      "answer": "Select the Roof Slope tool on the Roof Plan. The roof slope indicator will appear — place it according to your roof, then click it to open its properties. Choose Roof 1, Roof 2, etc. from the dropdown, and the tilt and azimuth will be filled automatically based on the Site Plan values.",
+      "keywords": [
+        "roof",
+        "tilt",
+        "azimuth",
+        "site plan",
+        "roof plan"
+      ],
+      "related_topics": [
+        "rp-006",
+        "rp-001",
+        "rp-009"
+      ]
+    },
+    {
+      "id": "rp-013",
+      "category": "Roof Plan",
+      "title": "Set the PDF boundary on the Roof Plan (or any page)",
+      "question": "How do I set the PDF boundary on the Roof Plan (or any page)?",
+      "answer": "Click the PDF Boundary tool. Toggle Visibility on, then adjust the scale as required. You can also turn Visibility off once the scale is set.",
+      "keywords": [
+        "roof",
+        "pdf boundary",
+        "roof plan",
+        "boundary"
+      ],
+      "related_topics": [
+        "rp-001",
+        "rp-009",
+        "rp-010"
+      ]
+    },
+    {
+      "id": "rp-014",
+      "category": "Roof Plan",
+      "title": "Get the roof slope details from",
+      "question": "Where do I get the roof slope details from?",
+      "answer": "From the Aurora shade report available on the shared drive.",
+      "keywords": [
+        "roof",
+        "aurora",
+        "aurora shade report",
+        "shade report"
+      ],
+      "related_topics": [
+        "rp-001",
+        "rp-003",
+        "rp-004"
+      ]
+    },
+    {
+      "id": "rp-015",
+      "category": "Roof Plan",
+      "title": "Add a microinverter or MCI on the Roof Plan",
+      "question": "How do I add a microinverter or MCI on the Roof Plan?",
+      "answer": "Right-click on a module and select Redraw Microinverters.",
+      "keywords": [
+        "roof",
+        "module",
+        "inverter",
+        "microinverter",
+        "roof plan",
+        "microinverters"
+      ],
+      "related_topics": [
+        "rp-010",
+        "rp-001",
+        "rp-003"
+      ]
+    },
+    {
+      "id": "sl-001",
+      "category": "String Layout",
+      "title": "The String Layout step cover",
+      "question": "What does the String Layout step cover?",
+      "answer": "This is Step 4 of the Zippy workflow — adding strings to the modules.",
+      "keywords": [
+        "module",
+        "modules",
+        "string",
+        "string layout",
+        "zippy"
+      ],
+      "related_topics": [
+        "sl-004",
+        "sl-013",
+        "sl-002"
+      ]
+    },
+    {
+      "id": "sl-002",
+      "category": "String Layout",
+      "title": "Create a string in the String Layout",
+      "question": "How do I create a string in the String Layout?",
+      "answer": "In the lower toolbar, click the (+) icon inside the dotted circle to create a new string. The system automatically assigns a unique ID — for example, after completing String A, clicking the button again will generate String B.",
+      "keywords": [
+        "string",
+        "string layout"
+      ],
+      "related_topics": [
+        "sl-001",
+        "sl-013",
+        "sl-003"
+      ]
+    },
+    {
+      "id": "sl-003",
+      "category": "String Layout",
+      "title": "Stringing done in Zippy",
+      "question": "How is stringing done in Zippy?",
+      "answer": "The string configuration depends on whether you are using a microinverter or a string inverter. For microinverters, refer to the datasheet to determine how many strings are required. Start the string from the ridge or near the combiner box location, connect it to a junction box, and then run the conduit to the combiner.",
+      "keywords": [
+        "nec",
+        "inverter",
+        "string",
+        "stringing",
+        "junction box",
+        "conduit",
+        "combiner",
+        "microinverter",
+        "microinverters",
+        "zippy"
+      ],
+      "related_topics": [
+        "sl-007",
+        "sl-008",
+        "sl-009"
+      ]
+    },
+    {
+      "id": "sl-004",
+      "category": "String Layout",
+      "title": "Determine the number of modules per string",
+      "question": "How do I determine the number of modules per string?",
+      "answer": "Check the inverter's minimum and maximum voltage limits and the module's voltage. Calculate the total string voltage and make sure it stays within the inverter's allowed range.",
+      "keywords": [
+        "module",
+        "modules",
+        "inverter",
+        "string"
+      ],
+      "related_topics": [
+        "sl-001",
+        "sl-003",
+        "sl-013"
+      ]
+    },
+    {
+      "id": "sl-005",
+      "category": "String Layout",
+      "title": "Place a junction box on the roof",
+      "question": "How do I place a junction box on the roof?",
+      "answer": "Select the Equipments tool from the bottom menu and click Junction Box. When the component is active, click on the roof to place it at the required location.",
+      "keywords": [
+        "roof",
+        "junction box",
+        "equipment"
+      ],
+      "related_topics": [
+        "sl-007",
+        "sl-009",
+        "sl-003"
+      ]
+    },
+    {
+      "id": "sl-006",
+      "category": "String Layout",
+      "title": "The junction box be placed",
+      "question": "Where should the junction box be placed?",
+      "answer": "The junction box should be placed close to the ridge.",
+      "keywords": [
+        "junction box"
+      ],
+      "related_topics": [
+        "sl-003",
+        "sl-005",
+        "sl-007"
+      ]
+    },
+    {
+      "id": "sl-007",
+      "category": "String Layout",
+      "title": "Set up the junction box and conduit wire",
+      "question": "How do I set up the junction box and conduit wire?",
+      "answer": "In the Equipments tool, click Junction Box — it will attach to your cursor. Place it where the string starts, then connect the conduit from the junction box to the combiner.",
+      "keywords": [
+        "nec",
+        "string",
+        "junction box",
+        "conduit",
+        "wire",
+        "equipment",
+        "combiner"
+      ],
+      "related_topics": [
+        "sl-003",
+        "sl-008",
+        "sl-009"
+      ]
+    },
+    {
+      "id": "sl-008",
+      "category": "String Layout",
+      "title": "Connect conduit wire from junction box to junction box, and from junction box to inverter or combiner",
+      "question": "How do I connect conduit wire from junction box to junction box, and from junction box to inverter or combiner?",
+      "answer": "Select the Conduit Wire tool from the Tools menu. When the cursor changes to a (+) crosshair, click the first junction box to set point 1, then click the next junction box or the inverter to set point 2. Press Enter to finalize the connection.",
+      "keywords": [
+        "nec",
+        "inverter",
+        "junction box",
+        "conduit",
+        "wire",
+        "combiner"
+      ],
+      "related_topics": [
+        "sl-003",
+        "sl-007",
+        "sl-009"
+      ]
+    },
+    {
+      "id": "sl-009",
+      "category": "String Layout",
+      "title": "Show the conduit wire",
+      "question": "How do I show the conduit wire?",
+      "answer": "Click Tools at the bottom of the page, select Conduit Wire, then click the junction box and the connecting equipment (or vice versa).",
+      "keywords": [
+        "nec",
+        "junction box",
+        "conduit",
+        "wire",
+        "equipment"
+      ],
+      "related_topics": [
+        "sl-007",
+        "sl-008",
+        "sl-003"
+      ]
+    },
+    {
+      "id": "sl-010",
+      "category": "String Layout",
+      "title": "Find the length of an array run and from junction box to inverter or combiner",
+      "question": "How do I find the length of an array run and from junction box to inverter or combiner?",
+      "answer": "Click the Scale icon in the bottom menu. All calculated measurements will be displayed, including distances from the array to the junction box and from the junction box to the combiner or inverter.",
+      "keywords": [
+        "inverter",
+        "junction box",
+        "combiner"
+      ],
+      "related_topics": [
+        "sl-003",
+        "sl-008",
+        "sl-007"
+      ]
+    },
+    {
+      "id": "sl-011",
+      "category": "String Layout",
+      "title": "Calculate wire lengths",
+      "question": "How do I calculate wire lengths?",
+      "answer": "Click the Wire Lengths icon at the bottom of the page — all wire lengths will be displayed.",
+      "keywords": [
+        "wire"
+      ],
+      "related_topics": [
+        "sl-007",
+        "sl-008",
+        "sl-009"
+      ]
+    },
+    {
+      "id": "sl-012",
+      "category": "String Layout",
+      "title": "Check the length of a conduit wire",
+      "question": "How do I check the length of a conduit wire?",
+      "answer": "Click on the conduit wire and its length will be displayed.",
+      "keywords": [
+        "conduit",
+        "wire"
+      ],
+      "related_topics": [
+        "sl-007",
+        "sl-008",
+        "sl-009"
+      ]
+    },
+    {
+      "id": "sl-013",
+      "category": "String Layout",
+      "title": "Generate the electrical calculation",
+      "question": "How do I generate the electrical calculation?",
+      "answer": "On the String Layout, go to the top-left corner and open Electrical Calculation. First save the module stringing, then configure the electrical calculation according to your flow. Fill in the required length and wire details, and generate the output.",
+      "keywords": [
+        "module",
+        "string",
+        "stringing",
+        "wire",
+        "string layout"
+      ],
+      "related_topics": [
+        "sl-001",
+        "sl-002",
+        "sl-003"
+      ]
+    },
+    {
+      "id": "sl-014",
+      "category": "String Layout",
+      "title": "Show the electrical flow according to my design",
+      "question": "How do I show the electrical flow according to my design?",
+      "answer": "Open Electrical Calculation to visualize and display the electrical flow as per your plan.",
+      "keywords": [],
+      "related_topics": []
+    },
+    {
+      "id": "sl-015",
+      "category": "String Layout",
+      "title": "We rotate the String Plan page",
+      "question": "Why do we rotate the String Plan page?",
+      "answer": "The String Plan is rotated so that the strings and the A, B, C, D labels (corresponding to 1, 2, 3, 4) are clearly readable. Rotate it from the closest side for better alignment and visibility.",
+      "keywords": [
+        "string"
+      ],
+      "related_topics": [
+        "sl-001",
+        "sl-002",
+        "sl-003"
+      ]
+    },
+    {
+      "id": "plc-001",
+      "category": "Placard",
+      "title": "Rotate the house on the Placard",
+      "question": "How do I rotate the house on the Placard?",
+      "answer": "Select PDF Boundary from the bottom menu. In the Rotation section, adjust the circular dial to rotate the layout to the required angle.",
+      "keywords": [
+        "pdf boundary",
+        "placard",
+        "rotation",
+        "boundary"
+      ],
+      "related_topics": [
+        "plc-002",
+        "plc-004",
+        "plc-008"
+      ]
+    },
+    {
+      "id": "plc-002",
+      "category": "Placard",
+      "title": "Rotate the page",
+      "question": "How do I rotate the page?",
+      "answer": "Click the PDF Boundary icon at the bottom of the page. Use the Rotation option in its panel to rotate the page as needed.",
+      "keywords": [
+        "pdf boundary",
+        "rotation",
+        "boundary"
+      ],
+      "related_topics": [
+        "plc-001",
+        "plc-004",
+        "plc-008"
+      ]
+    },
+    {
+      "id": "plc-003",
+      "category": "Placard",
+      "title": "We rotate the house on the Placard",
+      "question": "Why do we rotate the house on the Placard?",
+      "answer": "The building diagram is rotated so that it matches what a firefighter or emergency responder would see when approaching the building from the street.",
+      "keywords": [
+        "placard",
+        "tree"
+      ],
+      "related_topics": [
+        "plc-001",
+        "plc-004",
+        "plc-005"
+      ]
+    },
+    {
+      "id": "plc-004",
+      "category": "Placard",
+      "title": "Rotate the Placard",
+      "question": "How do I rotate the Placard?",
+      "answer": "Select the PDF Boundary icon and rotate the page so that the MSP is oriented toward the south.",
+      "keywords": [
+        "msp",
+        "pdf boundary",
+        "placard",
+        "boundary"
+      ],
+      "related_topics": [
+        "plc-001",
+        "plc-008",
+        "plc-002"
+      ]
+    },
+    {
+      "id": "plc-005",
+      "category": "Placard",
+      "title": "Rotate the north arrow on the Placard",
+      "question": "How do I rotate the north arrow on the Placard?",
+      "answer": "The north arrow automatically rotates according to the plan.",
+      "keywords": [
+        "placard",
+        "north arrow"
+      ],
+      "related_topics": [
+        "plc-001",
+        "plc-003",
+        "plc-004"
+      ]
+    },
+    {
+      "id": "plc-006",
+      "category": "Placard",
+      "title": "Add text with multiple leaders",
+      "question": "How do I add text with multiple leaders?",
+      "answer": "Click the Text tool to open the text popup. In the Arrow Count field, increase the count to add multiple leaders.",
+      "keywords": [],
+      "related_topics": []
+    },
+    {
+      "id": "plc-007",
+      "category": "Placard",
+      "title": "Use callouts",
+      "question": "How and why do I use callouts?",
+      "answer": "In the Text tool, select a callout and place it where needed. Callouts are used so that equipment is clearly identified and professionally presented on the drawing.",
+      "keywords": [
+        "callout",
+        "callouts",
+        "equipment"
+      ],
+      "related_topics": []
+    },
+    {
+      "id": "plc-008",
+      "category": "Placard",
+      "title": "Resize the page if the Placard is larger than the layout",
+      "question": "Can I resize the page if the Placard is larger than the layout?",
+      "answer": "Yes. Click the PDF Boundary icon at the bottom of the page. Use the Size option to resize the page.",
+      "keywords": [
+        "pdf boundary",
+        "placard",
+        "boundary"
+      ],
+      "related_topics": [
+        "plc-001",
+        "plc-004",
+        "plc-002"
+      ]
+    },
+    {
+      "id": "plc-009",
+      "category": "Placard",
+      "title": "Move the layout on this page to adjust it",
+      "question": "Can I move the layout on this page to adjust it?",
+      "answer": "You cannot move the layout directly, but you can drag the page. Click the PDF Boundary icon, then enable the Draggable option — you can now adjust the page position.",
+      "keywords": [
+        "pdf boundary",
+        "drag",
+        "boundary"
+      ],
+      "related_topics": [
+        "plc-001",
+        "plc-002",
+        "plc-004"
+      ]
+    },
+    {
+      "id": "plc-010",
+      "category": "Placard",
+      "title": "What types of plan sets can I design in this tool",
+      "question": "What types of plan sets can I design in this tool?",
+      "answer": "Currently, the tool supports residential projects only.",
+      "keywords": [],
+      "related_topics": []
+    },
+    {
+      "id": "plc-011",
+      "category": "Placard",
+      "title": "Design commercial projects in this tool",
+      "question": "Can I design commercial projects in this tool?",
+      "answer": "No, commercial projects are not supported at this time.",
+      "keywords": [],
+      "related_topics": []
+    },
+    {
+      "id": "plc-012",
+      "category": "Placard",
+      "title": "The tool work for all types of roofs",
+      "question": "Does the tool work for all types of roofs?",
+      "answer": "Yes, the tool works for all common residential roof types.",
+      "keywords": [
+        "roof"
+      ],
+      "related_topics": []
+    },
+    {
+      "id": "plc-013",
+      "category": "Placard",
+      "title": "How much time can I save using this tool",
+      "question": "How much time can I save using this tool?",
+      "answer": "The tool can save roughly half the time compared to designing manually.",
+      "keywords": [],
+      "related_topics": []
+    },
+    {
+      "id": "we-001",
+      "category": "Wall Elevation",
+      "title": "Select a wall in Wall Elevation",
+      "question": "How do I select a wall in Wall Elevation?",
+      "answer": "On the left side of the Wall Elevation page, click Select Equipment. Search for or select Wall from the list — you can then place the wall or any other equipment you need.",
+      "keywords": [
+        "wall elevation",
+        "equipment"
+      ],
+      "related_topics": [
+        "we-002",
+        "we-005",
+        "we-003"
+      ]
+    },
+    {
+      "id": "we-002",
+      "category": "Wall Elevation",
+      "title": "Select equipment in Wall Elevation",
+      "question": "How do I select equipment in Wall Elevation?",
+      "answer": "On the left side of the Wall Elevation page, open Select Equipment. Choose the equipment from the list or search for it. Clicking the equipment name will activate it, allowing you to place it on the wall.",
+      "keywords": [
+        "wall elevation",
+        "equipment"
+      ],
+      "related_topics": [
+        "we-001",
+        "we-005",
+        "we-003"
+      ]
+    },
+    {
+      "id": "we-003",
+      "category": "Wall Elevation",
+      "title": "Know in which direction the equipment is installed",
+      "question": "How do I know in which direction the equipment is installed?",
+      "answer": "Use Google Maps to verify whether the equipment is facing north, south, east, or west.",
+      "keywords": [
+        "equipment",
+        "google maps"
+      ],
+      "related_topics": [
+        "we-001",
+        "we-002",
+        "we-004"
+      ]
+    },
+    {
+      "id": "we-004",
+      "category": "Wall Elevation",
+      "title": "Connect conduit between two pieces of equipment",
+      "question": "How do I connect conduit between two pieces of equipment?",
+      "answer": "Go to Tools and click Conduit. Tap the first piece of equipment, then tap the second — the conduit will be drawn between them.",
+      "keywords": [
+        "nec",
+        "conduit",
+        "equipment"
+      ],
+      "related_topics": [
+        "we-001",
+        "we-002",
+        "we-003"
+      ]
+    },
+    {
+      "id": "we-005",
+      "category": "Wall Elevation",
+      "title": "Find the equipment list in Wall Elevation",
+      "question": "Where do I find the equipment list in Wall Elevation?",
+      "answer": "On the left side of the Wall Elevation page, use the Select Equipment option to find all available equipment.",
+      "keywords": [
+        "wall elevation",
+        "equipment"
+      ],
+      "related_topics": [
+        "we-001",
+        "we-002",
+        "we-003"
+      ]
+    },
+    {
+      "id": "we-006",
+      "category": "Wall Elevation",
+      "title": "Set the boundary after creating a Wall Elevation",
+      "question": "How do I set the boundary after creating a Wall Elevation?",
+      "answer": "Click the Boundary tool at the bottom, turn on Visibility, then click Edit. Edit points will appear — drag them to set your desired boundary.",
+      "keywords": [
+        "wall elevation",
+        "drag",
+        "boundary"
+      ],
+      "related_topics": [
+        "we-001",
+        "we-002",
+        "we-005"
+      ]
+    },
+    {
+      "id": "we-007",
+      "category": "Wall Elevation",
+      "title": "Why and how do we give the dimension of the gap between the ground and the equipment",
+      "question": "Why and how do we give the dimension of the gap between the ground and the equipment?",
+      "answer": "This dimension is required so that the clearance between the ground and the equipment is clearly shown for code compliance and inspection. To add it, use the Dimension tool from Tools: click the ground reference point, then click the bottom of the equipment to place the dimension.",
+      "keywords": [
+        "dimension",
+        "equipment"
+      ],
+      "related_topics": [
+        "we-001",
+        "we-002",
+        "we-003"
+      ]
+    },
+    {
+      "id": "att-001",
+      "category": "Attic",
+      "title": "A designer identify whether the structure is rafter or truss",
+      "question": "How does a designer identify whether the structure is rafter or truss?",
+      "answer": "Check the survey photos carefully, particularly of the attic or roof structure. Individual sloped members supporting the roof are rafters. If there are additional supporting members connected together to form a triangular framework along with the rafters, the structure is a truss.",
+      "keywords": [
+        "nec",
+        "roof",
+        "truss",
+        "rafter",
+        "rafters",
+        "attic",
+        "survey"
+      ],
+      "related_topics": [
+        "att-002",
+        "att-003"
+      ]
+    },
+    {
+      "id": "att-002",
+      "category": "Attic",
+      "title": "The difference between rafters and a truss structure",
+      "question": "What is the difference between rafters and a truss structure?",
+      "answer": "Rafters are simple sloped beams that support the roof. A truss is a combination of multiple members — including rafters and internal supports — forming a rigid triangular framework.",
+      "keywords": [
+        "roof",
+        "truss",
+        "rafter",
+        "rafters"
+      ],
+      "related_topics": [
+        "att-001"
+      ]
+    },
+    {
+      "id": "att-003",
+      "category": "Attic",
+      "title": "Add callouts in the attic view",
+      "question": "How do I add callouts in the attic view?",
+      "answer": "On the Attic Elevation, click the Text tool at the bottom to select any callout. Use the Callout toggle at the top — when on, the callout appears with a leader arrow; when off, it appears without one.",
+      "keywords": [
+        "callout",
+        "callouts",
+        "attic"
+      ],
+      "related_topics": [
+        "att-001"
+      ]
+    },
+    {
+      "id": "sld-001",
+      "category": "SLD (Single Line Diagram)",
+      "title": "Verify that the SLD (Single Line Diagram) is generated correctly",
+      "question": "How do I verify that the SLD (Single Line Diagram) is generated correctly?",
+      "answer": "First, verify that the continuous current is correct. Then check the conduit fill percentage and wire size — if the current is correct, the wire size should also be correct. Conduit fill percentages can be referenced from the Southwire website.",
+      "keywords": [
+        "sld",
+        "conduit",
+        "wire",
+        "southwire",
+        "wire size",
+        "conduit fill"
+      ],
+      "related_topics": [
+        "sld-003"
+      ]
+    },
+    {
+      "id": "sld-002",
+      "category": "SLD (Single Line Diagram)",
+      "title": "Verify that the AC Disconnect (ACD) is installed correctly",
+      "question": "How do I verify that the AC Disconnect (ACD) is installed correctly?",
+      "answer": "Always select an ACD whose rating is higher than the system current. Use a fused ACD if the connection is tapped (supply-side), and a non-fused ACD if the connection is backfeed (load-side).",
+      "keywords": [
+        "nec",
+        "acd",
+        "backfeed",
+        "supply-side",
+        "load-side",
+        "ac disconnect",
+        "fused",
+        "non-fused"
+      ],
+      "related_topics": [
+        "sld-006",
+        "sld-004"
+      ]
+    },
+    {
+      "id": "sld-003",
+      "category": "SLD (Single Line Diagram)",
+      "title": "Identify which array will appear in the SLD",
+      "question": "How do I identify which array will appear in the SLD?",
+      "answer": "Check the reference file, based on the AHJ and utility requirements.",
+      "keywords": [
+        "ahj",
+        "sld"
+      ],
+      "related_topics": [
+        "sld-001"
+      ]
+    },
+    {
+      "id": "sld-004",
+      "category": "SLD (Single Line Diagram)",
+      "title": "Determine whether backfeed is possible or a supply-side tap is required",
+      "question": "How do I determine whether backfeed is possible or a supply-side tap is required?",
+      "answer": "Apply the NEC 120% rule and verify the available space in the MSP. If the system current falls within the 120% rule and there is space in the MSP, proceed with backfeed. If the current exceeds the 120% rule, a supply-side tap is required.",
+      "keywords": [
+        "nec",
+        "msp",
+        "backfeed",
+        "supply-side"
+      ],
+      "related_topics": [
+        "sld-002",
+        "sld-006",
+        "sld-005"
+      ]
+    },
+    {
+      "id": "sld-005",
+      "category": "SLD (Single Line Diagram)",
+      "title": "Identify whether the MSP is top-feed, bottom-feed, or center-feed",
+      "question": "How do I identify whether the MSP is top-feed, bottom-feed, or center-feed?",
+      "answer": "Locate the main breaker on the MSP. If the main breaker is at the top, it is top-feed; if at the bottom, it is bottom-feed; and if in the middle, it is center-feed.",
+      "keywords": [
+        "msp",
+        "breaker",
+        "top-feed",
+        "bottom-feed",
+        "center-feed"
+      ],
+      "related_topics": [
+        "sld-004"
+      ]
+    },
+    {
+      "id": "sld-006",
+      "category": "SLD (Single Line Diagram)",
+      "title": "Use a non-fused ACD versus a fused ACD",
+      "question": "When should I use a non-fused ACD versus a fused ACD?",
+      "answer": "Use a fused ACD when tapping is required (supply-side). Use a non-fused ACD when backfeed (load-side) connection is used.",
+      "keywords": [
+        "nec",
+        "acd",
+        "backfeed",
+        "supply-side",
+        "load-side",
+        "fused",
+        "non-fused"
+      ],
+      "related_topics": [
+        "sld-002",
+        "sld-004"
+      ]
+    },
+    {
+      "id": "wf-001",
+      "category": "Workflow Overview",
+      "title": "The overall Zippy workflow",
+      "question": "What is the overall Zippy workflow?",
+      "answer": "Zippy produces designs that comply with the relevant AHJ and utility guidelines for the USA. The four core steps are Building Layout, Site Plan, Roof Plan, and String Layout. The workflow begins with a DXF — a 2D or 3D vector-based file generated in Aurora that contains the roof layout, module placement, obstructions, and fire setbacks. For step-by-step details and edge cases within any step, see the matching FAQ section.",
+      "keywords": [
+        "dxf",
+        "ahj",
+        "setback",
+        "setbacks",
+        "roof",
+        "module",
+        "string",
+        "aurora",
+        "site plan",
+        "building layout"
+      ],
+      "related_topics": [
+        "wf-003",
+        "wf-006",
+        "wf-004"
+      ]
+    },
+    {
+      "id": "wf-002",
+      "category": "Workflow Overview",
+      "title": "Find the mandatory fields and tools for each Zippy step",
+      "question": "Where do I find the mandatory fields and tools for each Zippy step?",
+      "answer": "The Help bar, accessible via the toggle in the upper-right corner, surfaces the mandatory fields and tools for each step and supports navigation between steps.",
+      "keywords": [
+        "zippy",
+        "help bar"
+      ],
+      "related_topics": [
+        "wf-003",
+        "wf-004",
+        "wf-005"
+      ]
+    },
+    {
+      "id": "wf-003",
+      "category": "Workflow Overview",
+      "title": "Step 1 — Building Layout involve in Zippy",
+      "question": "What does Step 1 — Building Layout involve in Zippy?",
+      "answer": "1. Align the imported DXF geometry to the property. Toggle between satellite and terrain view to assist with the alignment.\n2. Click *Add Module*, click on the roof (or any roof) in the 2D design, label the roof, and fill out the roof settings form.",
+      "keywords": [
+        "dxf",
+        "roof",
+        "module",
+        "building layout",
+        "zippy"
+      ],
+      "related_topics": [
+        "wf-001",
+        "wf-005",
+        "wf-006"
+      ]
+    },
+    {
+      "id": "wf-004",
+      "category": "Workflow Overview",
+      "title": "Step 2 — Site Plan involve in Zippy",
+      "question": "What does Step 2 — Site Plan involve in Zippy?",
+      "answer": "1. Fill in the structured information using the survey file as the source.\n2. Fill in the Electrical Information form. The form becomes active only after the Utility Meter and MSP have been added from the equipments list at the bottom of the toolbar and the home information has been completed.\n3. Use the Text tool to label the street and type its name.\n4. See the Site Plan FAQs for the rest of the tooling and edge cases that come up in this step.",
+      "keywords": [
+        "msp",
+        "electrical information",
+        "equipment",
+        "utility meter",
+        "tree",
+        "survey",
+        "site plan",
+        "zippy"
+      ],
+      "related_topics": [
+        "wf-001",
+        "wf-002",
+        "wf-003"
+      ]
+    },
+    {
+      "id": "wf-005",
+      "category": "Workflow Overview",
+      "title": "Step 3 — Roof Plan involve in Zippy",
+      "question": "What does Step 3 — Roof Plan involve in Zippy?",
+      "answer": "Roof orientation, including labeling the front and back of the residence.",
+      "keywords": [
+        "roof",
+        "orientation",
+        "roof plan",
+        "zippy"
+      ],
+      "related_topics": [
+        "wf-003",
+        "wf-001",
+        "wf-002"
+      ]
+    },
+    {
+      "id": "wf-006",
+      "category": "Workflow Overview",
+      "title": "Step 4 — String Layout involve in Zippy",
+      "question": "What does Step 4 — String Layout involve in Zippy?",
+      "answer": "Add strings to the modules.",
+      "keywords": [
+        "module",
+        "modules",
+        "string",
+        "string layout",
+        "zippy"
+      ],
+      "related_topics": [
+        "wf-001",
+        "wf-003",
+        "wf-002"
+      ]
+    }
+  ]
+}

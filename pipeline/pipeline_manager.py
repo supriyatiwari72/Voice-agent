@@ -136,6 +136,29 @@ class PipelineManager:
         else:
             self.memory_manager = None
             self.context.memory_manager = None
+
+        # Initialize Knowledge Retriever and bind to Context conditionally
+        knowledge_cfg = self.config.get("knowledge", {})
+        knowledge_provider_name = knowledge_cfg.get("provider", "")
+        if knowledge_provider_name:
+            try:
+                from knowledge.factory import KnowledgeFactory
+                knowledge_config = {
+                    **knowledge_cfg,
+                    "application": self.config.get("application", {}),
+                }
+                self.knowledge_retriever = KnowledgeFactory.get_provider(
+                    knowledge_provider_name, knowledge_config
+                )
+                self.context.knowledge_retriever = self.knowledge_retriever
+                logger.info(f"Knowledge retriever initialized: provider={knowledge_provider_name}")
+            except Exception as e:
+                logger.warning(f"Knowledge retrieval disabled — initialization failed: {e}")
+                self.knowledge_retriever = None
+                self.context.knowledge_retriever = None
+        else:
+            self.knowledge_retriever = None
+            self.context.knowledge_retriever = None
         
         # Setup Interruption Manager and register callbacks
         self.interruption_manager = InterruptionManager(self.context)
